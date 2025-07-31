@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="main_button_width">328dp</dimen>
+    <dimen name="main_button_height">220dp</dimen>
+    <dimen name="main_button_radius">16dp</dimen>
+</resources>
