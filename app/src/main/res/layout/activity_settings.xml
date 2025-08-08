@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/settings"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/default_gap"
+        android:paddingTop="14dp"
+        android:paddingBottom="@dimen/default_gap">
+
+        <ImageView
+            android:id="@+id/back_to_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:src="@drawable/ic_arrow_back" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_gap"
+            android:text="@string/settings"
+            android:textColor="@color/black"
+            android:textSize="@dimen/title" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/default_gap">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingVertical="21dp"
+            android:text="@string/theme_option"
+            android:textColor="@color/black"
+            android:textSize="@dimen/option_string" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/default_gap"
+        android:paddingVertical="21dp"
+        android:text="@string/share_app_option"
+        android:textColor="@color/black"
+        android:textSize="@dimen/option_string"
+        app:drawableEndCompat="@drawable/ic_share" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/default_gap"
+        android:paddingVertical="21dp"
+        android:text="@string/call_support_option"
+        android:textColor="@color/black"
+        android:textSize="@dimen/option_string"
+        app:drawableEndCompat="@drawable/ic_support" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/default_gap"
+        android:paddingVertical="21dp"
+        android:text="@string/license_option"
+        android:textColor="@color/black"
+        android:textSize="@dimen/option_string"
+        app:drawableEndCompat="@drawable/ic_arrow_forward" />
+
+
+</LinearLayout>
