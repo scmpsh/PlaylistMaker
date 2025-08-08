@@ -7,20 +7,17 @@
     android:background="@color/blue"
     android:orientation="vertical">
 
-    <FrameLayout
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/default_gap">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:text="@string/app_name"
-            android:textColor="@color/white"
-            android:textSize="@dimen/title" />
-    </FrameLayout>
-
+        android:layout_gravity="start"
+        android:paddingHorizontal="@dimen/default_gap"
+        android:paddingTop="14dp"
+        android:paddingBottom="@dimen/default_gap"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="@dimen/title" />
 
     <Button
         android:id="@+id/search_button"

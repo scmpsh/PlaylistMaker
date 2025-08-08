@@ -10,9 +10,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/default_gap"
-        android:layout_marginTop="@dimen/default_gap"
         android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/default_gap"
         android:paddingTop="14dp"
         android:paddingBottom="@dimen/default_gap">
 
@@ -35,10 +34,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/default_gap"
-        android:layout_marginTop="42dp"
+        android:layout_marginTop="24dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/default_gap">
 
         <TextView
             android:layout_width="0dp"
@@ -57,7 +56,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/default_gap"
+        android:paddingHorizontal="@dimen/default_gap"
         android:paddingVertical="21dp"
         android:text="@string/share_app_option"
         android:textColor="@color/black"
@@ -68,7 +67,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/default_gap"
+        android:paddingHorizontal="@dimen/default_gap"
         android:paddingVertical="21dp"
         android:text="@string/call_support_option"
         android:textColor="@color/black"
@@ -78,7 +77,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/default_gap"
+        android:paddingHorizontal="@dimen/default_gap"
         android:paddingVertical="21dp"
         android:text="@string/license_option"
         android:textColor="@color/black"
