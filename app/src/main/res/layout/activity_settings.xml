@@ -7,51 +7,27 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/back_to_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:drawablePadding="28dp"
         android:gravity="center_vertical"
         android:paddingHorizontal="@dimen/default_gap"
         android:paddingTop="14dp"
-        android:paddingBottom="@dimen/default_gap">
+        android:paddingBottom="@dimen/default_gap"
+        android:text="@string/settings"
+        android:textColor="@color/black"
+        android:textSize="@dimen/title"
+        app:drawableStartCompat="@drawable/ic_arrow_back" />
 
-        <ImageView
-            android:id="@+id/back_to_main"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/black"
-            android:src="@drawable/ic_arrow_back" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/default_gap"
-            android:text="@string/settings"
-            android:textColor="@color/black"
-            android:textSize="@dimen/title" />
-    </LinearLayout>
-
-    <LinearLayout
+    <androidx.appcompat.widget.SwitchCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="end"
         android:layout_marginTop="24dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/default_gap">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingVertical="21dp"
-            android:text="@string/theme_option"
-            android:textColor="@color/black"
-            android:textSize="@dimen/option_string" />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+        android:padding="21dp"
+        android:text="@string/theme_option" />
 
     <TextView
         android:layout_width="match_parent"
