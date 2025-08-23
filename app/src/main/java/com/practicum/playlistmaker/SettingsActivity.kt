@@ -2,10 +2,10 @@ package com.practicum.playlistmaker
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.FrameLayout
-import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
@@ -20,11 +20,44 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        val backButton = findViewById<ImageView>(R.id.back_to_main)
+        val backButton = findViewById<TextView>(R.id.leave_settings)
 
-        backButton.setOnClickListener {
-            val displayIntent = Intent(this, MainActivity::class.java)
-            startActivity(displayIntent)
+        onShareButtonClick()
+        onSupportMessageButtonClick()
+        onLicenseButtonClick()
+
+        backButton.setOnClickListener { finish() }
+    }
+
+    private fun onLicenseButtonClick() {
+        val licenseButton = findViewById<TextView>(R.id.license_button)
+        licenseButton.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, getString(R.string.license_link).toUri())
+            startActivity(intent)
+        }
+    }
+
+    private fun onSupportMessageButtonClick() {
+        val supportButton = findViewById<TextView>(R.id.support_button)
+        supportButton.setOnClickListener {
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                setData(getString(R.string.mailto).toUri())
+                putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.email)))
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject))
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.email_text))
+            }
+            startActivity(intent)
+        }
+    }
+
+    private fun onShareButtonClick() {
+        val shareButton = findViewById<TextView>(R.id.share_button)
+        shareButton.setOnClickListener {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                setType(getString(R.string.text_plain))
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.android_course_link))
+            }
+            startActivity(Intent.createChooser(intent, getString(R.string.chooser_title)))
         }
     }
 }

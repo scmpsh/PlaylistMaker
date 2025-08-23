@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="switch_track_on_color">@color/blue_light</color>
+    <color name="switch_thumb_on_color">@color/blue</color>
+</resources>
