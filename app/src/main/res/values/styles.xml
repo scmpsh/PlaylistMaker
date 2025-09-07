@@ -2,9 +2,6 @@
 <resources>
 
     <style name="DefaultLayout">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:orientation">vertical</item>
         <item name="android:background">@color/white</item>
     </style>
 
@@ -13,38 +10,23 @@
     </style>
 
     <style name="Header">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
-        <item name="android:paddingHorizontal">@dimen/dimen_16dp</item>
-        <item name="android:paddingTop">@dimen/dimen_14dp</item>
-        <item name="android:paddingBottom">@dimen/dimen_16dp</item>
         <item name="android:textSize">@dimen/title_22sp</item>
         <item name="android:textColor">@color/black</item>
         <item name="drawableTint">@color/black</item>
     </style>
 
     <style name="MainButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0dp</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_marginHorizontal">@dimen/dimen_16dp</item>
         <item name="android:backgroundTint">@color/white</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">@dimen/title_22sp</item>
         <item name="android:textColor">@color/black</item>
         <item name="cornerRadius">@dimen/dimen_16dp</item>
-        <item name="iconGravity">textStart</item>
-        <item name="iconPadding">8dp</item>
         <item name="iconTint">@color/black</item>
     </style>
 
     <style name="SettingsButton">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingHorizontal">@dimen/dimen_16dp</item>
-        <item name="android:paddingVertical">@dimen/dimen_21dp</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textSize">@dimen/string_16sp</item>
         <item name="android:textColor">@color/black</item>
@@ -63,6 +45,29 @@
     </style>
 
     <style name="ClearSearch">
+        <item name="tint">@color/gray</item>
+    </style>
+
+    <style name="TrackName">
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="TrackAuthor">
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/gray</item>
+    </style>
+
+    <style name="ArrowForward">
+        <item name="tint">@color/gray</item>
+    </style>
+
+    <style name="ShapeAppearance.App.CornerRadius.2dp" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">2dp</item>
+    </style>
+
+    <style name="TrackDelimiter">
         <item name="tint">@color/gray</item>
     </style>
 </resources>
