@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
+import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.model.Track
 
 class SearchActivity : AppCompatActivity() {
 
@@ -41,7 +43,44 @@ class SearchActivity : AppCompatActivity() {
         backButton.setOnClickListener { finish() }
 
         onSearchText()
+
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.adapter = TrackListAdapter(getTrackList())
     }
+
+    private fun getTrackList(): List<Track> =
+        listOf(
+            Track(
+                getString(R.string.track_name_nirvana_mock),
+                getString(R.string.track_artist_name_nirvana_mock),
+                getString(R.string.track_time_nirvana_mock),
+                getString(R.string.track_url_nirvana_mock)
+            ),
+            Track(
+                getString(R.string.track_name_mj_mock),
+                getString(R.string.track_artist_name_mj_mock),
+                getString(R.string.track_time_mj_mock),
+                getString(R.string.track_url_mj_mock)
+            ),
+            Track(
+                getString(R.string.track_name_bg_mock),
+                getString(R.string.track_artist_name_bg_mock),
+                getString(R.string.track_time_bg_mock),
+                getString(R.string.track_url_bg_mock)
+            ),
+            Track(
+                getString(R.string.track_name_lz_mock),
+                getString(R.string.track_artist_name_lz_mock),
+                getString(R.string.track_time_lz_mock),
+                getString(R.string.track_url_lz_mock)
+            ),
+            Track(
+                getString(R.string.track_name_gnr_mock),
+                getString(R.string.track_artist_name_gnr_mock),
+                getString(R.string.track_time_gnr_mock),
+                getString(R.string.track_url_gnr_mock)
+            )
+        )
 
     private fun onSearchText() {
         val searchInput = findViewById<EditText>(R.id.search_input)
