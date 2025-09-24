@@ -38,4 +38,7 @@
     <string name="track_artist_name_gnr_mock">Guns N\' Roses</string>
     <string name="track_time_gnr_mock">5:03</string>
     <string name="track_url_gnr_mock">https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg</string>
+    <string name="nothing_found">Ничего не нашлось</string>
+    <string name="something_wrong">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="update">Обновить</string>
 </resources>
