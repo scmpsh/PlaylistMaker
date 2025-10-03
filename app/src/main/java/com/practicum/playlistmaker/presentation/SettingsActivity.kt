@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.switchmaterial.SwitchMaterial
+import com.practicum.playlistmaker.App
 import com.practicum.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
@@ -23,11 +25,21 @@ class SettingsActivity : AppCompatActivity() {
 
         val backButton = findViewById<TextView>(R.id.leave_settings)
 
+        onSwitchThemeClick()
         onShareButtonClick()
         onSupportMessageButtonClick()
         onLicenseButtonClick()
 
         backButton.setOnClickListener { finish() }
+    }
+
+    private fun onSwitchThemeClick() {
+        val switchTheme = findViewById<SwitchMaterial>(R.id.SettingsSwitch)
+
+        switchTheme.isChecked = (applicationContext as App).darkTheme
+        switchTheme.setOnCheckedChangeListener { switcher, isChecked ->
+            (applicationContext as App).switchTheme(isChecked)
+        }
     }
 
     private fun onLicenseButtonClick() {

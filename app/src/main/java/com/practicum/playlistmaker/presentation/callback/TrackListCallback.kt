@@ -21,9 +21,10 @@ class TrackListCallback(
         oldItemPosition: Int,
         newItemPosition: Int
     ): Boolean {
-        val (oldTrackName, oldArtistName, oldTrackTime, oldArtworkUrl100) = oldList[oldItemPosition]
-        val (newTrackName, newArtistName, newTrackTime, newArtworkUrl100) = newList[newItemPosition]
-        return oldTrackName == newTrackName
+        val (oldTrackId, oldTrackName, oldArtistName, oldTrackTime, oldArtworkUrl100) = oldList[oldItemPosition]
+        val (newTrackId, newTrackName, newArtistName, newTrackTime, newArtworkUrl100) = newList[newItemPosition]
+        return oldTrackId == newTrackId
+                && oldTrackName == newTrackName
                 && oldArtistName == newArtistName
                 && oldTrackTime == newTrackTime
                 && oldArtworkUrl100 == newArtworkUrl100
