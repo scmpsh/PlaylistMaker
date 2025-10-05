@@ -19,7 +19,8 @@
         android:text="@string/settings"
         app:drawableStartCompat="@drawable/ic_arrow_back" />
 
-    <androidx.appcompat.widget.SwitchCompat
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/SettingsSwitch"
         style="@style/SettingsSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,7 +28,9 @@
         android:layout_marginTop="24dp"
         android:paddingHorizontal="@dimen/dimen_16dp"
         android:paddingVertical="@dimen/dimen_21dp"
-        android:text="@string/theme_option" />
+        android:text="@string/theme_option"
+        android:thumb="@drawable/ic_thumb"
+        android:track="@drawable/ic_track" />
 
     <TextView
         android:id="@+id/share_button"

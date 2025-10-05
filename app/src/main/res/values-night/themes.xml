@@ -3,6 +3,7 @@
     <style name="Base.Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="baseTextColor">@color/white</item>
     </style>
 
     <style name="Theme.SearchEditText" parent="Base.Theme.PlaylistMaker">

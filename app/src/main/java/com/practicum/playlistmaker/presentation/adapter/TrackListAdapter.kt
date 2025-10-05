@@ -1,31 +1,57 @@
 package com.practicum.playlistmaker.presentation.adapter
 
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.TrackPreferences
 import com.practicum.playlistmaker.data.dto.Track
 import com.practicum.playlistmaker.presentation.callback.TrackListCallback
+import com.practicum.playlistmaker.presentation.holder.ClearTracksButtonHolder
 import com.practicum.playlistmaker.presentation.holder.TrackListHolder
 
-class TrackListAdapter : RecyclerView.Adapter<TrackListHolder>() {
+class TrackListAdapter(
+    val sharedPreferences: SharedPreferences,
+    val trackList: MutableList<Track>,
+    val onClick: () -> Unit
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val trackPreferences = TrackPreferences()
 
-    private var trackList = mutableListOf<Track>()
+    private var clearButtonVisibility = false
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackListHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.track_list, parent, false)
-        return TrackListHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(viewType, parent, false)
+        return when (viewType) {
+            R.layout.track_list -> TrackListHolder(view)
+            else -> ClearTracksButtonHolder(view)
+        }
     }
 
-    override fun onBindViewHolder(holder: TrackListHolder, position: Int) {
-        holder.bind(trackList[position])
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is TrackListHolder) {
+            val track = trackList[position]
+            holder.bind(track)
+            holder.itemView.setOnClickListener {
+                trackPreferences.write(sharedPreferences, track)
+            }
+        }
+        if (holder is ClearTracksButtonHolder) {
+            holder.bind(onClick, clearButtonVisibility)
+        }
     }
 
     override fun getItemCount(): Int {
-        return trackList.size
+        return trackList.size + 1
     }
+
+    override fun getItemViewType(position: Int): Int =
+        if (position < trackList.size)
+            R.layout.track_list
+        else
+            R.layout.clear_track_list_button
 
     fun updateTrackList(newTrackList: List<Track>) {
         val diffCallback = TrackListCallback(trackList, newTrackList)
@@ -35,5 +61,11 @@ class TrackListAdapter : RecyclerView.Adapter<TrackListHolder>() {
         diffResult.dispatchUpdatesTo(this)
     }
 
-
+    fun setClearButtonVisibility(visible: Boolean) {
+        val oldVisibility = clearButtonVisibility
+        clearButtonVisibility = visible
+        if (oldVisibility != visible) {
+            notifyItemRangeChanged(itemCount - 1, 1)
+        }
+    }
 }
