@@ -2,6 +2,7 @@ package com.practicum.playlistmaker
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 
@@ -16,7 +17,8 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         sharedPreferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
-        darkTheme = sharedPreferences.getBoolean(DARK_THEME_KEY, false)
+        val systemIsInDarkMode = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        darkTheme = sharedPreferences.getBoolean(DARK_THEME_KEY, systemIsInDarkMode)
         switchTheme(darkTheme)
     }
 
