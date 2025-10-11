@@ -43,4 +43,14 @@
     <string name="update">Обновить</string>
     <string name="you_are_search">Вы искали</string>
     <string name="clean_history">Очистить историю</string>
+    <string name="duration">Длительность</string>
+    <string name="album">Альбом</string>
+    <string name="year">Год</string>
+    <string name="genre">Жанр</string>
+    <string name="country">Страна</string>
+    <string name="track_album_nirvana_mock">Yesterday (Remastered 2009)</string>
+    <string name="year_nirvana_mock">1965</string>
+    <string name="genre_rock_mock">Rock</string>
+    <string name="country_britain_mock">Великобритания</string>
+    <string name="track_time_played_mock">0:30</string>
 </resources>

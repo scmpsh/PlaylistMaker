@@ -18,12 +18,11 @@ class TrackPreferences {
         if (cachedTrackList.size == MAX_CACHED_TRACK_LIST_SIZE) {
             cachedTrackList.removeAt(cachedTrackList.lastIndex)
         }
-        if (cachedTrackList.any { it.trackId == track.trackId }) {
-            cachedTrackList.removeIf { it.trackId == track.trackId }
-        }
-        cachedTrackList.add(0, track)
-        sharedPreferences.edit {
-            putString(TRACK_LIST_KEY, Gson().toJson(cachedTrackList))
+        if (cachedTrackList.none { it.trackId == track.trackId }) {
+            cachedTrackList.add(0, track)
+            sharedPreferences.edit {
+                putString(TRACK_LIST_KEY, Gson().toJson(cachedTrackList))
+            }
         }
     }
 

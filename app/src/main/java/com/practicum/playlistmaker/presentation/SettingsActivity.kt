@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.presentation
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -23,7 +24,7 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        val backButton = findViewById<TextView>(R.id.leave_settings)
+        val backButton = findViewById<ImageView>(R.id.leave_settings)
 
         onSwitchThemeClick()
         onShareButtonClick()
