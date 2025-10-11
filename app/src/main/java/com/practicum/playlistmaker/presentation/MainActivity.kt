@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         musicButton.setOnClickListener {
-            val displayIntent = Intent(this, MusicActivity::class.java)
+            val displayIntent = Intent(this, MediaActivity::class.java)
             startActivity(displayIntent)
         }
 

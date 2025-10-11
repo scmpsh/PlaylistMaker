@@ -74,7 +74,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        val backButton = findViewById<TextView>(R.id.leave_search)
+        val backButton = findViewById<ImageView>(R.id.leave_search)
         val updateButton = findViewById<Button>(R.id.UpdateButton)
         searchHistoryTitle = findViewById(R.id.search_history_title)
         nothingFoundPlaceholder = findViewById(R.id.NothingFoundPlaceholder)
