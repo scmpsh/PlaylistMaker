@@ -1,8 +1,11 @@
 package com.practicum.playlistmaker.presentation.adapter
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +26,8 @@ class TrackListAdapter(
     val onClick: () -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val trackPreferences = TrackPreferences()
+    private val handler = Handler(Looper.getMainLooper())
+    private var isClickAllowed = true
 
     private var clearButtonVisibility = false
 
@@ -49,18 +54,30 @@ class TrackListAdapter(
     }
 
     private fun onTrackClick(itemView: View, track: Track) {
-        trackPreferences.write(sharedPreferences, track)
+        if (clickDebounce()) {
+            trackPreferences.write(sharedPreferences, track)
 
-        val displayIntent = Intent(itemView.context, AudioPlayerActivity::class.java)
-        val bundle = Bundle()
+            val displayIntent = Intent(itemView.context, AudioPlayerActivity::class.java)
+            val bundle = Bundle()
 
-        bundle.putParcelable(TRACK_EXTRA, track)
-        displayIntent.putExtras(bundle)
-        itemView.context.startActivity(displayIntent)
+            bundle.putParcelable(TRACK_EXTRA, track)
+            displayIntent.putExtras(bundle)
+            itemView.context.startActivity(displayIntent)
+        }
+    }
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
     }
 
     override fun getItemCount(): Int {
-        return trackList.size + 1
+        return trackList.size + if (clearButtonVisibility) 1 else 0
     }
 
     override fun getItemViewType(position: Int): Int =
@@ -81,7 +98,11 @@ class TrackListAdapter(
         val oldVisibility = clearButtonVisibility
         clearButtonVisibility = visible
         if (oldVisibility != visible) {
-            notifyItemRangeChanged(itemCount - 1, 1)
+            notifyDataSetChanged()
         }
+    }
+
+    companion object {
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }
