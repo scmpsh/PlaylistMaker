@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.presentation.holder
+package com.practicum.playlistmaker.presentation.tracks
 
 import android.view.View
 import android.widget.Button

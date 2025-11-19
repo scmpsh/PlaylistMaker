@@ -1,6 +1,6 @@
-package com.practicum.playlistmaker.presentation
+package com.practicum.playlistmaker.presentation.tracks
 
-import android.content.SharedPreferences
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,29 +18,18 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
-import com.practicum.playlistmaker.APP_PREFERENCES
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.TrackPreferences
-import com.practicum.playlistmaker.data.api.ItunesApi
-import com.practicum.playlistmaker.data.dto.ItunesResponse
-import com.practicum.playlistmaker.data.dto.Track
-import com.practicum.playlistmaker.presentation.adapter.TrackListAdapter
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.practicum.playlistmaker.domain.api.TrackListInteractor
+import com.practicum.playlistmaker.domain.models.SearchResult
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.presentation.player.AudioPlayerActivity
+import com.practicum.playlistmaker.presentation.player.TRACK_EXTRA
 
-class SearchActivity : AppCompatActivity() {
+class TrackListActivity : AppCompatActivity() {
 
     private var inputText: String = DEF_INPUT_TEXT
-    private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl(ITUNES_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val itunesApi = retrofit.create(ItunesApi::class.java)
     private lateinit var recyclerView: RecyclerView
-    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var trackListAdapter: TrackListAdapter
     private lateinit var nothingFoundPlaceholder: LinearLayout
     private lateinit var somethingWrongPlaceholder: LinearLayout
@@ -48,7 +37,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var handler: Handler
     private val searchRunnable = Runnable { searchTracks() }
-    private val trackPreferences = TrackPreferences()
+    private lateinit var trackListInteractor: TrackListInteractor
+    private var isClickAllowed = true
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -71,6 +61,7 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
         handler = Handler(Looper.getMainLooper())
+        trackListInteractor = Creator.provideTrackListInteractor(this)
 
         initViews()
         setupRecyclerView()
@@ -84,7 +75,6 @@ class SearchActivity : AppCompatActivity() {
         nothingFoundPlaceholder = findViewById(R.id.NothingFoundPlaceholder)
         somethingWrongPlaceholder = findViewById(R.id.SomethingWrongPlaceholder)
         recyclerView = findViewById(R.id.recyclerView)
-        sharedPreferences = getSharedPreferences(APP_PREFERENCES, MODE_PRIVATE)
         progressBar = findViewById(R.id.progressBar)
 
         backButton.setOnClickListener { finish() }
@@ -92,9 +82,11 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        trackListAdapter = TrackListAdapter(sharedPreferences, mutableListOf()) {
-            clearHistory()
-        }
+        trackListAdapter = TrackListAdapter(
+            mutableListOf(),
+            { clearHistory() },
+            { track -> onTrackClick(track) },
+        )
         recyclerView.adapter = trackListAdapter
     }
 
@@ -128,8 +120,9 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun handleFocus(searchInput: EditText) {
-        if (searchInput.hasFocus() && searchInput.text.isNullOrEmpty() &&
-            trackPreferences.read(sharedPreferences).isNotEmpty()
+        if (searchInput.hasFocus()
+            && searchInput.text.isNullOrEmpty()
+            && trackListInteractor.getHistory().isNotEmpty()
         ) {
             showHistory()
         } else {
@@ -150,29 +143,22 @@ class SearchActivity : AppCompatActivity() {
             nothingFoundPlaceholder.visibility = View.GONE
             somethingWrongPlaceholder.visibility = View.GONE
 
-            itunesApi.search(inputText).enqueue(object : Callback<ItunesResponse> {
-                override fun onResponse(
-                    call: Call<ItunesResponse?>,
-                    response: Response<ItunesResponse?>
-                ) {
-                    progressBar.visibility = View.GONE
-                    if (response.isSuccessful) {
-                        val results = response.body()?.results
-                        if (!results.isNullOrEmpty()) {
-                            showResults(results)
-                        } else {
-                            showNothingFound()
+            trackListInteractor.searchTracks(
+                inputText, object : TrackListInteractor.TrackListConsumer {
+                    override fun consume(searchResult: SearchResult) {
+                        runOnUiThread {
+                            progressBar.visibility = View.GONE
+                            when (searchResult) {
+                                is SearchResult.Success -> showResults(searchResult.tracks)
+
+                                is SearchResult.Empty -> showNothingFound()
+
+                                is SearchResult.Error -> showError()
+                            }
                         }
-                    } else {
-                        showError()
                     }
                 }
-
-                override fun onFailure(call: Call<ItunesResponse?>, t: Throwable) {
-                    progressBar.visibility = View.GONE
-                    showError()
-                }
-            })
+            )
         }
     }
 
@@ -203,7 +189,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showHistory() {
-        val history = trackPreferences.read(sharedPreferences)
+        val history = trackListInteractor.getHistory()
         if (history.isNotEmpty()) {
             trackListAdapter.updateTrackList(history)
             trackListAdapter.setClearButtonVisibility(true)
@@ -222,16 +208,39 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun clearHistory() {
-        trackPreferences.cleanCachedTrackList(sharedPreferences)
+        trackListInteractor.cleanHistory()
         trackListAdapter.updateTrackList(emptyList())
         trackListAdapter.setClearButtonVisibility(false)
         searchHistoryTitle.visibility = View.GONE
     }
 
+    private fun onTrackClick(track: Track) {
+        if (clickDebounce()) {
+            trackListInteractor.addTrackToHistory(track)
+
+            val displayIntent = Intent(this, AudioPlayerActivity::class.java)
+            val bundle = Bundle()
+
+            bundle.putParcelable(TRACK_EXTRA, track)
+            displayIntent.putExtras(bundle)
+            startActivity(displayIntent)
+        }
+    }
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
     companion object {
         private const val INPUT_TEXT_KEY = "INPUT_TEXT_KEY"
         private const val DEF_INPUT_TEXT = ""
-        private const val ITUNES_URL = "https://itunes.apple.com"
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }

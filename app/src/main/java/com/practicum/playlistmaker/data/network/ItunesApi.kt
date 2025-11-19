@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.data.api
+package com.practicum.playlistmaker.data.network
 
 import com.practicum.playlistmaker.data.dto.ItunesResponse
 import retrofit2.Call
@@ -8,6 +8,6 @@ import retrofit2.http.Query
 interface ItunesApi {
 
     @GET("/search?entity=song")
-    fun search(@Query("term") text: String): Call<ItunesResponse>
+    fun search(@Query("term") term: String): Call<ItunesResponse>
 
 }

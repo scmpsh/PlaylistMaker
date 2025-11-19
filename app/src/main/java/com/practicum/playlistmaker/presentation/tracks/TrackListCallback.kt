@@ -1,7 +1,7 @@
-package com.practicum.playlistmaker.presentation.callback
+package com.practicum.playlistmaker.presentation.tracks
 
 import androidx.recyclerview.widget.DiffUtil
-import com.practicum.playlistmaker.data.dto.Track
+import com.practicum.playlistmaker.domain.models.Track
 
 class TrackListCallback(
     private val oldList: List<Track>,

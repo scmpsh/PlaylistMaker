@@ -1,6 +1,5 @@
-package com.practicum.playlistmaker.presentation
+package com.practicum.playlistmaker.presentation.player
 
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -15,8 +14,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.data.dto.Track
+import com.practicum.playlistmaker.domain.api.AudioPlayerInteractor
+import com.practicum.playlistmaker.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -40,11 +41,9 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var pauseButton: ImageView
     private lateinit var playTimeView: TextView
 
-    private var mediaPlayer = MediaPlayer()
+    private lateinit var audioPlayerInteractor: AudioPlayerInteractor
     private lateinit var handler: Handler
     private val playTimeRunnable = renderPlayTime()
-
-    private var playerState = STATE_DEFAULT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +65,7 @@ class AudioPlayerActivity : AppCompatActivity() {
 
         if (track != null) {
             fillViewsWithTrackData(track)
-            preparePlayer(track.previewUrl)
+            initPlayer(track.previewUrl)
         }
     }
 
@@ -77,7 +76,7 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer.release()
+        audioPlayerInteractor.releasePlayer()
     }
 
     private fun initViews() {
@@ -99,56 +98,39 @@ class AudioPlayerActivity : AppCompatActivity() {
         backButton.setOnClickListener { finish() }
     }
 
-    private fun preparePlayer(previewUrl: String) {
-        mediaPlayer.setDataSource(previewUrl)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playerState = STATE_PREPARED
-        }
-        mediaPlayer.setOnCompletionListener {
-            pauseButton.visibility = View.GONE
-            playButton.visibility = View.VISIBLE
-            playerState = STATE_PREPARED
-            handler.removeCallbacks(playTimeRunnable)
-            setPlayerToBeginning()
+    private fun initPlayer(previewUrl: String) {
+        audioPlayerInteractor = Creator.provideAudioPlayerInteractor()
+        audioPlayerInteractor.preparePlayer(
+            previewUrl
+        ) {
+            runOnUiThread {
+                pauseButton.visibility = View.GONE
+                playButton.visibility = View.VISIBLE
+                handler.removeCallbacks(playTimeRunnable)
+                setPlayerToBeginning()
+            }
         }
 
         playButton.setOnClickListener {
-            playbackControl()
+            startPlayer()
         }
         pauseButton.setOnClickListener {
-            playbackControl()
+            pausePlayer()
         }
     }
 
     private fun startPlayer() {
-        mediaPlayer.start()
+        audioPlayerInteractor.startPlayer()
         pauseButton.visibility = View.VISIBLE
         playButton.visibility = View.GONE
-        playerState = STATE_PLAYING
         postRenderPlayTimeTask()
     }
 
     private fun pausePlayer() {
-        if (mediaPlayer.isPlaying) {
-            mediaPlayer.pause()
-        }
+        audioPlayerInteractor.pausePlayer()
         pauseButton.visibility = View.GONE
         playButton.visibility = View.VISIBLE
-        playerState = STATE_PAUSED
         handler.removeCallbacks(playTimeRunnable)
-    }
-
-    private fun playbackControl() {
-        when (playerState) {
-            STATE_PLAYING -> {
-                pausePlayer()
-            }
-
-            STATE_PREPARED, STATE_PAUSED -> {
-                startPlayer()
-            }
-        }
     }
 
     private fun postRenderPlayTimeTask() {
@@ -160,25 +142,23 @@ class AudioPlayerActivity : AppCompatActivity() {
             playTimeView.text = SimpleDateFormat(
                 "mm:ss",
                 Locale.getDefault()
-            ).format(mediaPlayer.currentPosition)
-            handler.postDelayed(this, THREE_HUNDRED_DELAY_MILLIS)
+            ).format(audioPlayerInteractor.getCurrentPosition())
+            handler.postDelayed(this, PLAY_TIME_RENDER_DELAY_MILLIS)
         }
     }
-
 
     private fun setPlayerToBeginning() {
         playTimeView.text = getString(R.string.default_play_time)
-        if (mediaPlayer.currentPosition > 0) {
-            mediaPlayer.seekTo(0)
+        if (audioPlayerInteractor.getCurrentPosition() > 0) {
+            audioPlayerInteractor.seekTo(0)
         }
     }
-
 
     private fun fillViewsWithTrackData(track: Track) {
         trackNameView.text = track.trackName
         artistNameView.text = track.artistName
-        trackDuration.text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime.toLong())
+        trackDuration.text = SimpleDateFormat("mm:ss", Locale.getDefault())
+            .format(track.trackTime.toLong())
         albumNameView.text = track.collectionName
         yearView.text = track.releaseDate.take(4)
         genreView.text = track.primaryGenreName
@@ -202,11 +182,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     companion object {
         private const val TRACK_IMAGE_SIZE_512 = "512x512bb.jpg"
         private const val SLASH = "/"
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
 
-        private const val THREE_HUNDRED_DELAY_MILLIS = 300L
+        private const val PLAY_TIME_RENDER_DELAY_MILLIS = 300L
     }
 }
