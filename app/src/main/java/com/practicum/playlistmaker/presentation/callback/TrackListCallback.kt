@@ -8,26 +8,14 @@ class TrackListCallback(
     private val newList: List<Track>
 ) : DiffUtil.Callback() {
     override fun getOldListSize(): Int = oldList.size
-
     override fun getNewListSize(): Int = newList.size
 
-    override fun areItemsTheSame(
-        oldItemPosition: Int,
-        newItemPosition: Int
-    ): Boolean =
-        oldList[oldItemPosition].trackName === newList[newItemPosition].trackName
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition].trackId == newList[newItemPosition].trackId
+    }
 
-    override fun areContentsTheSame(
-        oldItemPosition: Int,
-        newItemPosition: Int
-    ): Boolean {
-        val (oldTrackId, oldTrackName, oldArtistName, oldTrackTime, oldArtworkUrl100) = oldList[oldItemPosition]
-        val (newTrackId, newTrackName, newArtistName, newTrackTime, newArtworkUrl100) = newList[newItemPosition]
-        return oldTrackId == newTrackId
-                && oldTrackName == newTrackName
-                && oldArtistName == newArtistName
-                && oldTrackTime == newTrackTime
-                && oldArtworkUrl100 == newArtworkUrl100
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition] == newList[newItemPosition]
     }
 
 }
