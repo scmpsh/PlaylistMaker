@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.presentation
+package com.practicum.playlistmaker.presentation.main
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,6 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.presentation.media.MediaActivity
+import com.practicum.playlistmaker.presentation.settings.SettingsActivity
+import com.practicum.playlistmaker.presentation.tracks.TrackListActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         val settingsButton = findViewById<Button>(R.id.settings_button)
 
         searchButton.setOnClickListener {
-            val displayIntent = Intent(this, SearchActivity::class.java)
+            val displayIntent = Intent(this, TrackListActivity::class.java)
             startActivity(displayIntent)
         }
 

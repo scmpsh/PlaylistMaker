@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.presentation
+package com.practicum.playlistmaker.presentation.settings
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,10 +10,13 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.switchmaterial.SwitchMaterial
-import com.practicum.playlistmaker.App
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
+
+    private val settingsInteractor = Creator.provideSettingsInteractor()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -37,9 +40,9 @@ class SettingsActivity : AppCompatActivity() {
     private fun onSwitchThemeClick() {
         val switchTheme = findViewById<SwitchMaterial>(R.id.SettingsSwitch)
 
-        switchTheme.isChecked = (applicationContext as App).darkTheme
-        switchTheme.setOnCheckedChangeListener { switcher, isChecked ->
-            (applicationContext as App).switchTheme(isChecked)
+        switchTheme.isChecked = settingsInteractor.isDarkThemeEnabled()
+        switchTheme.setOnCheckedChangeListener { _, isChecked ->
+            settingsInteractor.updateTheme(isChecked)
         }
     }
 
