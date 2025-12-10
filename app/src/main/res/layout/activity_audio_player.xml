@@ -129,7 +129,6 @@
             android:textSize="14sp"
             app:layout_constraintEnd_toStartOf="@id/rightBorder"
             app:layout_constraintStart_toEndOf="@id/leftBorder"
-            app:layout_constraintTag="playerTrackPlayTime"
             app:layout_constraintTop_toBottomOf="@id/playerTrackImage" />
 
         <androidx.constraintlayout.widget.Guideline
