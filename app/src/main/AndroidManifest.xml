@@ -2,11 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name="com.practicum.playlistmaker.App"
+        android:name="com.practicum.playlistmaker.util.App"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -15,19 +14,19 @@
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.PlaylistMaker">
         <activity
-            android:name=".presentation.player.AudioPlayerActivity"
+            android:name=".player.ui.AudioPlayerActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.tracks.TrackListActivity"
+            android:name=".search.ui.SearchActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.media.MediaActivity"
+            android:name=".media.ui.MediaActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.settings.SettingsActivity"
+            android:name=".settings.ui.activity.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.main.MainActivity"
+            android:name=".main.ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

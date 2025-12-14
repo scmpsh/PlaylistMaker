@@ -30,7 +30,7 @@
     </LinearLayout>
 
     <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/SettingsSwitch"
+        android:id="@+id/switchTheme"
         style="@style/SettingsSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
