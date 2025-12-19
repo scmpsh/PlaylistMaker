@@ -3,13 +3,12 @@ package com.practicum.playlistmaker.search.domain.impl
 import com.practicum.playlistmaker.search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.domain.api.SearchRepository
 import com.practicum.playlistmaker.util.Resource
-import java.util.concurrent.Executors
+import java.util.concurrent.Executor
 
 class SearchInteractorImpl(
     private val repository: SearchRepository,
+    private val executor: Executor,
 ) : SearchInteractor {
-
-    private val executor = Executors.newCachedThreadPool()
 
     override fun searchTracks(
         term: String,

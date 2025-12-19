@@ -7,15 +7,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivityAudioPlayerBinding
 import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.view_model.PlayerStateType
 import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -27,7 +27,9 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAudioPlayerBinding
 
-    private var viewModel: PlayerViewModel? = null
+    private val playerViewModel by viewModel<PlayerViewModel> {
+        parametersOf(getTrackFromExtra()?.previewUrl)
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,29 +43,19 @@ class AudioPlayerActivity : AppCompatActivity() {
             insets
         }
 
-        val track = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(TRACK_EXTRA, TrackUi::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getParcelableExtra(TRACK_EXTRA)
-        }
+        val track = getTrackFromExtra()
 
         if (track != null) {
             fillViewsWithTrackData(track)
 
-            viewModel = ViewModelProvider(
-                this,
-                PlayerViewModel.getFactory(track.previewUrl, Creator.getMediaPlayer())
-            )[PlayerViewModel::class.java]
-
             binding.playButton.setOnClickListener {
-                viewModel?.onPlayButtonClicked()
+                playerViewModel.onPlayButtonClicked()
             }
             binding.pauseButton.setOnClickListener {
-                viewModel?.onPlayButtonClicked()
+                playerViewModel.onPlayButtonClicked()
             }
 
-            viewModel?.observePlayerState()?.observe(this) {
+            playerViewModel.observePlayerState().observe(this) {
                 if (it.stateType == PlayerStateType.STATE_PREPARED
                     || it.stateType == PlayerStateType.STATE_PAUSED
                 ) {
@@ -77,6 +69,16 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
 
         binding.backButtonPlayer.setOnClickListener { finish() }
+    }
+
+    private fun getTrackFromExtra(): TrackUi? {
+        val track = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(TRACK_EXTRA, TrackUi::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(TRACK_EXTRA)
+        }
+        return track
     }
 
     private fun showPauseButton() {

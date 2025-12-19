@@ -2,8 +2,6 @@ package com.practicum.playlistmaker.search.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -11,8 +9,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.ViewModelProvider
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.player.ui.AudioPlayerActivity
 import com.practicum.playlistmaker.player.ui.TRACK_EXTRA
@@ -21,18 +17,16 @@ import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchState
 import com.practicum.playlistmaker.search.ui.view_model.SearchUiItem
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
     private var inputText: String = DEF_INPUT_TEXT
-    private var isClickAllowed = true
 
     private lateinit var binding: ActivitySearchBinding
     private lateinit var adapter: SearchAdapter
 
-    private lateinit var handler: Handler
-
-    private lateinit var viewModel: SearchViewModel
+    private val searchViewModel by viewModel<SearchViewModel>()
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -55,24 +49,15 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        viewModel = ViewModelProvider(
-            this, SearchViewModel.getFactory(
-                Creator.provideSearchInteractor(),
-                Creator.provideSearchHistoryInteractor()
-            )
-        )[SearchViewModel::class.java]
-
         setupRecyclerView()
         setupSearchInput()
 
-        handler = Handler(Looper.getMainLooper())
-
-        viewModel.observeSearchState().observe(this) {
+        searchViewModel.observeSearchState().observe(this) {
             render(it)
         }
 
         binding.leaveSearch.setOnClickListener { finish() }
-        binding.updateButton.setOnClickListener { viewModel.onRetryClicked() }
+        binding.updateButton.setOnClickListener { searchViewModel.onRetryClicked() }
     }
 
     private fun render(state: SearchState) {
@@ -87,7 +72,7 @@ class SearchActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         adapter = SearchAdapter(
             onTrackClick = { openPlayer(it) },
-            onClearHistoryClick = { viewModel.onClearHistoryClicked() }
+            onClearHistoryClick = { searchViewModel.onClearHistoryClicked() }
         )
         binding.recyclerView.adapter = adapter
     }
@@ -95,12 +80,14 @@ class SearchActivity : AppCompatActivity() {
     private fun setupSearchInput() {
         binding.searchInput.doOnTextChanged { text, _, _, _ ->
             inputText = text?.toString() ?: DEF_INPUT_TEXT
-            viewModel.onSearchTextChanged(text.toString())
+            searchViewModel.onSearchTextChanged(text.toString())
             binding.clearSearchButton.isVisible = !text.isNullOrBlank()
         }
 
-        binding.searchInput.setOnFocusChangeListener { _, _ ->
-            viewModel.onSearchTextChanged(inputText)
+        binding.searchInput.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                searchViewModel.onSearchTextChanged(inputText)
+            }
         }
 
         binding.clearSearchButton.setOnClickListener {
@@ -110,8 +97,8 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun openPlayer(track: Track) {
-        if (clickDebounce()) {
-            viewModel.onTrackClicked(track)
+        if (searchViewModel.clickDebounce()) {
+            searchViewModel.onTrackClicked(track)
             startActivity(
                 Intent(this, AudioPlayerActivity::class.java).apply {
                     putExtra(TRACK_EXTRA, track.toUi())
@@ -160,24 +147,9 @@ class SearchActivity : AppCompatActivity() {
         adapter.updateTrackList(emptyList())
     }
 
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed(
-                { isClickAllowed = true },
-                CLICK_DEBOUNCE_DELAY
-            )
-        }
-        return current
-    }
-
     companion object {
         private const val INPUT_TEXT_KEY = "INPUT_TEXT_KEY"
         private const val DEF_INPUT_TEXT = ""
-
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
 }

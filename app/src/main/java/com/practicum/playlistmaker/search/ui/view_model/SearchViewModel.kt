@@ -1,25 +1,22 @@
 package com.practicum.playlistmaker.search.ui.view_model
 
 import android.os.Handler
-import android.os.Looper
 import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
 
 class SearchViewModel(
     private val searchInteractor: SearchInteractor,
-    private val searchHistoryInteractor: SearchHistoryInteractor
+    private val searchHistoryInteractor: SearchHistoryInteractor,
+    private val handler: Handler,
 ) : ViewModel() {
-
-    private val handler = Handler(Looper.getMainLooper())
     private var latestSearchText: String? = null
+
+    private var isClickAllowed = true
 
     private val stateLiveData = MutableLiveData<SearchState>()
     fun observeSearchState(): LiveData<SearchState> = stateLiveData
@@ -130,6 +127,19 @@ class SearchViewModel(
         stateLiveData.postValue(SearchState.Content(emptyList()))
     }
 
+    fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed(
+                { isClickAllowed = true },
+                CLICK_DEBOUNCE_DELAY
+            )
+        }
+        return current
+    }
+
 
     override fun onCleared() {
         super.onCleared()
@@ -141,13 +151,6 @@ class SearchViewModel(
 
         private val SEARCH_REQUEST_TOKEN = Any()
 
-        fun getFactory(
-            searchInteractor: SearchInteractor,
-            searchHistoryInteractor: SearchHistoryInteractor
-        ): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                SearchViewModel(searchInteractor, searchHistoryInteractor)
-            }
-        }
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }
