@@ -9,7 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.practicum.playlistmaker.databinding.ActivityMainBinding
 import com.practicum.playlistmaker.media.ui.MediaActivity
 import com.practicum.playlistmaker.search.ui.SearchActivity
-import com.practicum.playlistmaker.settings.ui.activity.SettingsActivity
+import com.practicum.playlistmaker.settings.ui.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
 

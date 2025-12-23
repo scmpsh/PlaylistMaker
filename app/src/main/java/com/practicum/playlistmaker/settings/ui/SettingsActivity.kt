@@ -1,18 +1,17 @@
-package com.practicum.playlistmaker.settings.ui.activity
+package com.practicum.playlistmaker.settings.ui
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 import com.practicum.playlistmaker.settings.ui.view_model.SettingsViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
-    private var viewModel: SettingsViewModel? = null
+    private val settingsViewModel by viewModel<SettingsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,14 +24,7 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        viewModel = ViewModelProvider(
-            this, SettingsViewModel.getFactory(
-                Creator.provideSharingInteractor(),
-                Creator.provideSettingsInteractor()
-            )
-        )[SettingsViewModel::class.java]
-
-        viewModel?.observeSettingsState()?.observe(this) {
+        settingsViewModel.observeSettingsState().observe(this) {
             binding.switchTheme.isChecked = it.isDarkEnabled
         }
 
@@ -46,25 +38,25 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun onSwitchThemeClick() {
         binding.switchTheme.setOnCheckedChangeListener { _, isChecked ->
-            viewModel?.onThemeSwitchClicked(isChecked)
+            settingsViewModel.onThemeSwitchClicked(isChecked)
         }
     }
 
     private fun onLicenseButtonClick() {
         binding.licenseButton.setOnClickListener {
-            viewModel?.openLicense()
+            settingsViewModel.openLicense()
         }
     }
 
     private fun onSupportMessageButtonClick() {
         binding.supportButton.setOnClickListener {
-            viewModel?.openSupport()
+            settingsViewModel.openSupport()
         }
     }
 
     private fun onShareButtonClick() {
         binding.shareButton.setOnClickListener {
-            viewModel?.shareApp()
+            settingsViewModel.shareApp()
         }
     }
 }

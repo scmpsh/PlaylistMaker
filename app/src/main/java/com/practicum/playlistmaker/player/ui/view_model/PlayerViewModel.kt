@@ -2,27 +2,22 @@ package com.practicum.playlistmaker.player.ui.view_model
 
 import android.media.MediaPlayer
 import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerViewModel(
     private val url: String,
-    private val mediaPlayer: MediaPlayer
+    private val mediaPlayer: MediaPlayer,
+    private val handler: Handler
 ) : ViewModel() {
 
     private val playerStateLiveData =
         MutableLiveData(PlayerState(PlayerStateType.STATE_DEFAULT, START_TIME))
 
     fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
-
-    private val handler = Handler(Looper.getMainLooper())
 
     private val timerRunnable = Runnable {
         if (playerStateLiveData.value?.stateType == PlayerStateType.STATE_PLAYING) {
@@ -114,12 +109,5 @@ class PlayerViewModel(
     companion object {
         private const val PLAY_TIME_RENDER_DELAY_MILLIS = 200L
         private const val START_TIME = "00:00"
-
-        fun getFactory(url: String, mediaPlayer: MediaPlayer): ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    PlayerViewModel(url, mediaPlayer)
-                }
-            }
     }
 }
