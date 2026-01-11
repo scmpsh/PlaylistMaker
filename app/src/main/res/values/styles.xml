@@ -100,4 +100,21 @@
     <style name="AudioPlayerValue" parent="AudioPlayerTrackAdditionalInfo">
         <item name="android:textColor">@color/black</item>
     </style>
+
+    <style name="TabStyle" parent="Widget.MaterialComponents.TabLayout">
+        <item name="android:background">@color/white</item>
+        <item name="tabIndicatorColor">@color/black</item>
+        <item name="tabTextColor">@color/black</item>
+        <item name="tabSelectedTextColor">@color/black</item>
+    </style>
+
+    <style name="TabTextAppearance" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+    </style>
+
+    <style name="MediaPlaceholder">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+    </style>
 </resources>
