@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.util
 
 import android.app.Application
 import com.practicum.playlistmaker.di.commonModule
+import com.practicum.playlistmaker.di.mediaModule
 import com.practicum.playlistmaker.di.playerModule
 import com.practicum.playlistmaker.di.searchModule
 import com.practicum.playlistmaker.di.settingsModule
@@ -23,7 +24,8 @@ class App : Application() {
                 playerModule,
                 searchModule,
                 settingsModule,
-                sharingModule
+                sharingModule,
+                mediaModule,
             )
         }
 
