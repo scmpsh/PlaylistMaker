@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mediaFragment">
+
+    <fragment
+        android:id="@+id/mediaFragment"
+        android:name="com.practicum.playlistmaker.media.ui.MediaFragment"
+        android:label="fragment_media"
+        tools:layout="@layout/fragment_media" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.practicum.playlistmaker.settings.ui.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+    <navigation
+        android:id="@+id/searchFragment"
+        app:startDestination="@id/search_root">
+        <fragment
+            android:id="@+id/search_root"
+            android:name="com.practicum.playlistmaker.search.ui.SearchFragment"
+            android:label="fragment_search"
+            tools:layout="@layout/fragment_search">
+            <action
+                android:id="@+id/action_searchFragment_to_audioPlayerFragment"
+                app:destination="@id/audioPlayerFragment" />
+        </fragment>
+        <fragment
+            android:id="@+id/audioPlayerFragment"
+            android:name="com.practicum.playlistmaker.player.ui.AudioPlayerFragment"
+            android:label="fragment_audio_player"
+            tools:layout="@layout/fragment_audio_player" />
+    </navigation>
+</navigation>

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="baseTextColor" format="color" />
+    <attr name="baseBackgroundColor" format="color" />
+    <attr name="menuNotActiveItemColor" format="color" />
 </resources>

@@ -1,17 +1,18 @@
 package com.practicum.playlistmaker.search.ui
 
-import android.content.Intent
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
-import com.practicum.playlistmaker.databinding.ActivitySearchBinding
-import com.practicum.playlistmaker.player.ui.AudioPlayerActivity
-import com.practicum.playlistmaker.player.ui.TRACK_EXTRA
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.databinding.FragmentSearchBinding
+import com.practicum.playlistmaker.player.ui.AudioPlayerFragment
 import com.practicum.playlistmaker.player.ui.mapper.toUi
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchState
@@ -19,45 +20,38 @@ import com.practicum.playlistmaker.search.ui.view_model.SearchUiItem
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : Fragment() {
 
-    private var inputText: String = DEF_INPUT_TEXT
-
-    private lateinit var binding: ActivitySearchBinding
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
     private lateinit var adapter: SearchAdapter
-
     private val searchViewModel by viewModel<SearchViewModel>()
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(INPUT_TEXT_KEY, inputText)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        inputText = savedInstanceState.getString(INPUT_TEXT_KEY, DEF_INPUT_TEXT)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
         setupSearchInput()
 
-        searchViewModel.observeSearchState().observe(this) {
+        searchViewModel.observeSearchState().observe(viewLifecycleOwner) {
             render(it)
         }
 
-        binding.leaveSearch.setOnClickListener { finish() }
         binding.updateButton.setOnClickListener { searchViewModel.onRetryClicked() }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun render(state: SearchState) {
@@ -79,14 +73,15 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setupSearchInput() {
         binding.searchInput.doOnTextChanged { text, _, _, _ ->
-            inputText = text?.toString() ?: DEF_INPUT_TEXT
-            searchViewModel.onSearchTextChanged(text.toString())
+            if (binding.searchInput.hasFocus()) {
+                searchViewModel.onSearchTextChanged(text.toString())
+            }
             binding.clearSearchButton.isVisible = !text.isNullOrBlank()
         }
 
         binding.searchInput.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                searchViewModel.onSearchTextChanged(inputText)
+            if (hasFocus && binding.searchInput.text.isNullOrBlank()) {
+                searchViewModel.onSearchTextChanged("")
             }
         }
 
@@ -99,16 +94,15 @@ class SearchActivity : AppCompatActivity() {
     private fun openPlayer(track: Track) {
         if (searchViewModel.clickDebounce()) {
             searchViewModel.onTrackClicked(track)
-            startActivity(
-                Intent(this, AudioPlayerActivity::class.java).apply {
-                    putExtra(TRACK_EXTRA, track.toUi())
-                }
+            findNavController().navigate(
+                R.id.action_searchFragment_to_audioPlayerFragment,
+                AudioPlayerFragment.createArgs(track.toUi())
             )
         }
     }
 
     private fun hideKeyboard() {
-        (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
+        (requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
             .hideSoftInputFromWindow(binding.searchInput.windowToken, 0)
     }
 
@@ -146,10 +140,4 @@ class SearchActivity : AppCompatActivity() {
         binding.searchHistoryTitle.isVisible = false
         adapter.updateTrackList(emptyList())
     }
-
-    companion object {
-        private const val INPUT_TEXT_KEY = "INPUT_TEXT_KEY"
-        private const val DEF_INPUT_TEXT = ""
-    }
-
 }

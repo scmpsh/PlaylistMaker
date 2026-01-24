@@ -4,6 +4,8 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="baseTextColor">@color/black</item>
+        <item name="baseBackgroundColor">@color/white</item>
+        <item name="menuNotActiveItemColor">@color/black</item>
     </style>
 
     <style name="Theme.SearchEditText" parent="Base.Theme.PlaylistMaker">
