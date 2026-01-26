@@ -2,15 +2,17 @@ package com.practicum.playlistmaker.player.ui
 
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityAudioPlayerBinding
+import com.practicum.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.view_model.PlayerStateType
 import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
@@ -19,29 +21,26 @@ import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-
-const val TRACK_EXTRA = "TRACK_EXTRA"
-
-class AudioPlayerActivity : AppCompatActivity() {
+class AudioPlayerFragment : Fragment() {
 
 
-    private lateinit var binding: ActivityAudioPlayerBinding
-
+    private var _binding: FragmentAudioPlayerBinding? = null
+    private val binding get() = _binding!!
     private val playerViewModel by viewModel<PlayerViewModel> {
         parametersOf(getTrackFromExtra()?.previewUrl)
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentAudioPlayerBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.player)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val track = getTrackFromExtra()
 
@@ -55,7 +54,7 @@ class AudioPlayerActivity : AppCompatActivity() {
                 playerViewModel.onPlayButtonClicked()
             }
 
-            playerViewModel.observePlayerState().observe(this) {
+            playerViewModel.observePlayerState().observe(viewLifecycleOwner) {
                 if (it.stateType == PlayerStateType.STATE_PREPARED
                     || it.stateType == PlayerStateType.STATE_PAUSED
                 ) {
@@ -68,15 +67,22 @@ class AudioPlayerActivity : AppCompatActivity() {
             }
         }
 
-        binding.backButtonPlayer.setOnClickListener { finish() }
+        binding.backButtonPlayer.setOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun getTrackFromExtra(): TrackUi? {
         val track = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(TRACK_EXTRA, TrackUi::class.java)
+            requireArguments().getParcelable(TRACK_EXTRA, TrackUi::class.java)
         } else {
             @Suppress("DEPRECATION")
-            intent.getParcelableExtra(TRACK_EXTRA)
+            requireArguments().getParcelable(TRACK_EXTRA)
         }
         return track
     }
@@ -119,5 +125,13 @@ class AudioPlayerActivity : AppCompatActivity() {
     companion object {
         private const val TRACK_IMAGE_SIZE_512 = "512x512bb.jpg"
         private const val SLASH = "/"
+
+        private const val TRACK_EXTRA = "TRACK_EXTRA"
+
+        fun createArgs(track: TrackUi): Bundle {
+            return bundleOf(
+                TRACK_EXTRA to track
+            )
+        }
     }
 }

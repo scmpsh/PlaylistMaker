@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Color for the active (checked) state -->
+    <item android:color="@color/blue" android:state_checked="true" />
+    <!-- Default color for the inactive (unchecked) state -->
+    <item android:color="?attr/menuNotActiveItemColor" />
+</selector>
