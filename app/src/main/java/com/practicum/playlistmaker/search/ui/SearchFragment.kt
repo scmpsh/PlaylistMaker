@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
@@ -18,6 +19,7 @@ import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchState
 import com.practicum.playlistmaker.search.ui.view_model.SearchUiItem
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
+import com.practicum.playlistmaker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -26,6 +28,8 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var adapter: SearchAdapter
     private val searchViewModel by viewModel<SearchViewModel>()
+
+    private lateinit var onTrackClickDebounce: (Track) -> Unit
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,6 +43,18 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        onTrackClickDebounce = debounce(
+            0,
+            viewLifecycleOwner.lifecycleScope,
+            false
+        ) { track ->
+            searchViewModel.onTrackClicked(track)
+            findNavController().navigate(
+                R.id.action_searchFragment_to_audioPlayerFragment,
+                AudioPlayerFragment.createArgs(track.toUi())
+            )
+        }
+
         setupRecyclerView()
         setupSearchInput()
 
@@ -46,7 +62,12 @@ class SearchFragment : Fragment() {
             render(it)
         }
 
-        binding.updateButton.setOnClickListener { searchViewModel.onRetryClicked() }
+        binding.updateButton.setOnClickListener {
+            searchViewModel.onSearchTextChanged(
+                binding.searchInput.text.toString(),
+                true
+            )
+        }
     }
 
     override fun onDestroyView() {
@@ -65,7 +86,7 @@ class SearchFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = SearchAdapter(
-            onTrackClick = { openPlayer(it) },
+            onTrackClick = { onTrackClickDebounce(it) },
             onClearHistoryClick = { searchViewModel.onClearHistoryClicked() }
         )
         binding.recyclerView.adapter = adapter
@@ -81,23 +102,14 @@ class SearchFragment : Fragment() {
 
         binding.searchInput.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && binding.searchInput.text.isNullOrBlank()) {
-                searchViewModel.onSearchTextChanged("")
+                searchViewModel.onSearchTextChanged(binding.searchInput.text.toString())
             }
         }
 
         binding.clearSearchButton.setOnClickListener {
-            binding.searchInput.text.clear()
             hideKeyboard()
-        }
-    }
-
-    private fun openPlayer(track: Track) {
-        if (searchViewModel.clickDebounce()) {
-            searchViewModel.onTrackClicked(track)
-            findNavController().navigate(
-                R.id.action_searchFragment_to_audioPlayerFragment,
-                AudioPlayerFragment.createArgs(track.toUi())
-            )
+            binding.searchInput.text.clear()
+            searchViewModel.onSearchTextChanged(binding.searchInput.text.toString())
         }
     }
 
@@ -124,7 +136,6 @@ class SearchFragment : Fragment() {
     }
 
     private fun showNothingFound() {
-        adapter.updateTrackList(emptyList())
         binding.progressBar.isVisible = false
         binding.recyclerView.isVisible = false
         binding.nothingFoundPlaceholder.isVisible = true
@@ -138,6 +149,5 @@ class SearchFragment : Fragment() {
         binding.nothingFoundPlaceholder.isVisible = false
         binding.somethingWrongPlaceholder.isVisible = true
         binding.searchHistoryTitle.isVisible = false
-        adapter.updateTrackList(emptyList())
     }
 }

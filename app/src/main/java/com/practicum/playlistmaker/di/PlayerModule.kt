@@ -15,7 +15,6 @@ val playerModule = module {
         PlayerViewModel(
             url = url,
             mediaPlayer = get(),
-            handler = get()
         )
     }
 }

@@ -6,25 +6,27 @@ import com.practicum.playlistmaker.search.data.mapper.mapToDomain
 import com.practicum.playlistmaker.search.data.network.NetworkClient
 import com.practicum.playlistmaker.search.domain.api.SearchRepository
 import com.practicum.playlistmaker.search.domain.models.Track
-import com.practicum.playlistmaker.util.Resource
+import com.practicum.playlistmaker.utils.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class SearchRepositoryImpl(
     private val networkClient: NetworkClient,
 ) : SearchRepository {
 
-    override fun searchTracks(term: String): Resource<List<Track>> {
+    override fun searchTracks(term: String): Flow<Resource<List<Track>>> = flow {
         val response = networkClient.doRequest(ItunesRequest(term))
-        return when (response.resultCode) {
+        when (response.resultCode) {
             -1 -> {
-                Resource.Error("Проверьте подключение к интернету")
+                emit(Resource.Error("Проверьте подключение к интернету"))
             }
 
             200 -> {
-                Resource.Success((response as ItunesResponse).results.map { it.mapToDomain() })
+                emit(Resource.Success((response as ItunesResponse).results.map { it.mapToDomain() }))
             }
 
             else -> {
-                Resource.Error("Ошибка сервера")
+                emit(Resource.Error("Ошибка сервера"))
             }
         }
     }

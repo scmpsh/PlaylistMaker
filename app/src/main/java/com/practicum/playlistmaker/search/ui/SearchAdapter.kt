@@ -23,8 +23,9 @@ class SearchAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = items[position]) {
-            is SearchUiItem.TrackItem ->
-                (holder as SearchHolder).bind(item.track, onTrackClick)
+            is SearchUiItem.TrackItem -> with(holder as SearchHolder) {
+                bind(item.track, onTrackClick)
+            }
 
             is SearchUiItem.ClearHistoryItem ->
                 (holder as ClearHistoryHolder).bind(onClearHistoryClick)

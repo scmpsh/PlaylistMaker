@@ -5,8 +5,8 @@ import com.practicum.playlistmaker.search.data.mapper.mapToDomain
 import com.practicum.playlistmaker.search.data.mapper.toDto
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.search.domain.models.Track
-import com.practicum.playlistmaker.util.Resource
-import com.practicum.playlistmaker.util.storage.StorageClient
+import com.practicum.playlistmaker.utils.Resource
+import com.practicum.playlistmaker.utils.storage.StorageClient
 
 class SearchHistoryRepositoryImpl(
     private val storageClient: StorageClient<ArrayList<TrackDto>>
