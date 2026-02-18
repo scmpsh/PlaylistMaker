@@ -7,6 +7,7 @@ class SearchCallback(
     private val oldList: List<SearchUiItem>,
     private val newList: List<SearchUiItem>
 ) : DiffUtil.Callback() {
+
     override fun getOldListSize(): Int = oldList.size
     override fun getNewListSize(): Int = newList.size
 
@@ -17,13 +18,13 @@ class SearchCallback(
         return if (oldItem is SearchUiItem.TrackItem && newItem is SearchUiItem.TrackItem) {
             oldItem.track.trackId == newItem.track.trackId
         } else {
-            oldItem == newItem
+            oldItem is SearchUiItem.ClearHistoryItem && newItem is SearchUiItem.ClearHistoryItem
         }
     }
 
-
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition] == newList[newItemPosition]
+    override fun areContentsTheSame(oldPos: Int, newPos: Int): Boolean {
+        val oldItem = oldList[oldPos]
+        val newItem = newList[newPos]
+        return oldItem == newItem
     }
-
 }

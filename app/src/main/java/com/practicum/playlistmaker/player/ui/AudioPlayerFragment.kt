@@ -14,7 +14,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentAudioPlayerBinding
 import com.practicum.playlistmaker.player.ui.model.TrackUi
-import com.practicum.playlistmaker.player.ui.view_model.PlayerStateType
 import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -55,15 +54,12 @@ class AudioPlayerFragment : Fragment() {
             }
 
             playerViewModel.observePlayerState().observe(viewLifecycleOwner) {
-                if (it.stateType == PlayerStateType.STATE_PREPARED
-                    || it.stateType == PlayerStateType.STATE_PAUSED
-                ) {
+                if (it.isPlayButtonEnabled) {
                     showPlayButton()
-                }
-                if (it.stateType == PlayerStateType.STATE_PLAYING) {
+                } else {
                     showPauseButton()
                 }
-                binding.playerTrackPlayTime.text = it.playerTime
+                binding.playerTrackPlayTime.text = it.progress
             }
         }
 

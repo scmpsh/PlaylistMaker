@@ -2,26 +2,24 @@ package com.practicum.playlistmaker.search.domain.impl
 
 import com.practicum.playlistmaker.search.domain.api.SearchInteractor
 import com.practicum.playlistmaker.search.domain.api.SearchRepository
-import com.practicum.playlistmaker.util.Resource
-import java.util.concurrent.Executor
+import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.utils.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class SearchInteractorImpl(
-    private val repository: SearchRepository,
-    private val executor: Executor,
+    private val repository: SearchRepository
 ) : SearchInteractor {
 
-    override fun searchTracks(
-        term: String,
-        consumer: SearchInteractor.SearchConsumer
-    ) {
-        executor.execute {
-            when (val resource = repository.searchTracks(term)) {
+    override fun searchTracks(term: String): Flow<Pair<List<Track>?, String?>> {
+        return repository.searchTracks(term).map { result ->
+            when (result) {
                 is Resource.Success -> {
-                    consumer.consume(resource.data, null)
+                    Pair(result.data, null)
                 }
 
                 is Resource.Error -> {
-                    consumer.consume(null, resource.message)
+                    Pair(null, result.message)
                 }
             }
         }

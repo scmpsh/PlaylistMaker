@@ -5,7 +5,7 @@ import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.practicum.playlistmaker.settings.domain.api.SettingsRepository
 import com.practicum.playlistmaker.settings.domain.model.ThemeSettings
-import com.practicum.playlistmaker.util.storage.StorageClient
+import com.practicum.playlistmaker.utils.storage.StorageClient
 
 class SettingsRepositoryImpl(
     private val storageClient: StorageClient<ThemeSettings>,

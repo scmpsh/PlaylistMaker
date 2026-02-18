@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.util.storage
+package com.practicum.playlistmaker.utils.storage
 
 interface StorageClient<T> {
     fun storeData(data: T)

@@ -1,29 +1,27 @@
 package com.practicum.playlistmaker.player.ui.view_model
 
 import android.media.MediaPlayer
-import android.os.Handler
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerViewModel(
     private val url: String,
-    private val mediaPlayer: MediaPlayer,
-    private val handler: Handler
+    private val mediaPlayer: MediaPlayer
 ) : ViewModel() {
 
     private val playerStateLiveData =
-        MutableLiveData(PlayerState(PlayerStateType.STATE_DEFAULT, START_TIME))
+        MutableLiveData<PlayerState>(PlayerState.Default())
 
     fun observePlayerState(): LiveData<PlayerState> = playerStateLiveData
 
-    private val timerRunnable = Runnable {
-        if (playerStateLiveData.value?.stateType == PlayerStateType.STATE_PLAYING) {
-            startTimerUpdate()
-        }
-    }
+    private var timerJob: Job? = null
 
     init {
         preparePlayer()
@@ -31,18 +29,23 @@ class PlayerViewModel(
 
     override fun onCleared() {
         super.onCleared()
+        mediaPlayer.stop()
         mediaPlayer.release()
-        handler.removeCallbacks(timerRunnable)
+        renderState(PlayerState.Default())
+        timerJob?.cancel()
     }
 
     fun onPlayButtonClicked() {
-        if (playerStateLiveData.value?.stateType == PlayerStateType.STATE_PREPARED
-            || playerStateLiveData.value?.stateType == PlayerStateType.STATE_PAUSED
-        ) {
-            startPlayer()
-        }
-        if (playerStateLiveData.value?.stateType == PlayerStateType.STATE_PLAYING) {
-            pausePlayer()
+        when (playerStateLiveData.value) {
+            is PlayerState.Playing -> {
+                pausePlayer()
+            }
+
+            is PlayerState.Prepared, is PlayerState.Paused -> {
+                startPlayer()
+            }
+
+            else -> {}
         }
     }
 
@@ -50,10 +53,10 @@ class PlayerViewModel(
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
-            renderState(PlayerState(PlayerStateType.STATE_PREPARED, START_TIME))
+            renderState(PlayerState.Prepared())
         }
         mediaPlayer.setOnCompletionListener {
-            renderState(PlayerState(PlayerStateType.STATE_PREPARED, START_TIME))
+            renderState(PlayerState.Prepared())
             resetTimer()
         }
     }
@@ -61,33 +64,29 @@ class PlayerViewModel(
     private fun startPlayer() {
         mediaPlayer.start()
         renderState(
-            PlayerState(
-                PlayerStateType.STATE_PLAYING,
-                playerStateLiveData.value?.playerTime ?: START_TIME
-            )
+            PlayerState.Playing(getCurrentPlayerPosition())
         )
         startTimerUpdate()
     }
 
     private fun pausePlayer() {
-        pauseTimer()
         mediaPlayer.pause()
+        pauseTimer()
         renderState(
-            PlayerState(
-                PlayerStateType.STATE_PAUSED,
-                playerStateLiveData.value?.playerTime ?: START_TIME
-            )
+            PlayerState.Paused(getCurrentPlayerPosition())
         )
     }
 
     private fun startTimerUpdate() {
-        renderState(
-            PlayerState(
-                PlayerStateType.STATE_PLAYING,
-                SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
-            )
-        )
-        handler.postDelayed(timerRunnable, PLAY_TIME_RENDER_DELAY_MILLIS)
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            while (mediaPlayer.isPlaying) {
+                delay(PLAY_TIME_RENDER_DELAY_MILLIS)
+                renderState(
+                    PlayerState.Playing(getCurrentPlayerPosition())
+                )
+            }
+        }
     }
 
     private fun renderState(state: PlayerState) {
@@ -95,19 +94,24 @@ class PlayerViewModel(
     }
 
     private fun pauseTimer() {
-        handler.removeCallbacks(timerRunnable)
+        timerJob?.cancel()
     }
 
     private fun resetTimer() {
-        handler.removeCallbacks(timerRunnable)
-        renderState(PlayerState(PlayerStateType.STATE_PREPARED, START_TIME))
+        timerJob?.cancel()
+        renderState(PlayerState.Prepared())
         if (mediaPlayer.currentPosition > 0) {
             mediaPlayer.seekTo(0)
         }
     }
 
+    private fun getCurrentPlayerPosition(): String {
+        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+            ?: DEFAULT_TIME
+    }
+
     companion object {
-        private const val PLAY_TIME_RENDER_DELAY_MILLIS = 200L
-        private const val START_TIME = "00:00"
+        private const val PLAY_TIME_RENDER_DELAY_MILLIS = 300L
+        private const val DEFAULT_TIME = "00:00"
     }
 }

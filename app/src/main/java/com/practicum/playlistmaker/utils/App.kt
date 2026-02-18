@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.util
+package com.practicum.playlistmaker.utils
 
 import android.app.Application
 import com.practicum.playlistmaker.di.commonModule

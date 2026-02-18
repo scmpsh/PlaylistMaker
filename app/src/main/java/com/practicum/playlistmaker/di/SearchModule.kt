@@ -14,15 +14,14 @@ import com.practicum.playlistmaker.search.domain.api.SearchRepository
 import com.practicum.playlistmaker.search.domain.impl.SearchHistoryInteractorImpl
 import com.practicum.playlistmaker.search.domain.impl.SearchInteractorImpl
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
-import com.practicum.playlistmaker.util.storage.PrefsStorageClient
-import com.practicum.playlistmaker.util.storage.StorageClient
+import com.practicum.playlistmaker.utils.storage.PrefsStorageClient
+import com.practicum.playlistmaker.utils.storage.StorageClient
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 
 private const val ITUNES_URL = "https://itunes.apple.com"
 private const val TRACK_LIST_KEY = "TRACK_LIST_KEY"
@@ -41,7 +40,7 @@ val searchModule = module {
 
     single<ItunesApi> { get<Retrofit>().create(ItunesApi::class.java) }
 
-    single<NetworkClient> { RetrofitNetworkClient(get()) }
+    single<NetworkClient> { RetrofitNetworkClient(get(), androidContext()) }
 
     single<StorageClient<ArrayList<TrackDto>>>(named(HISTORY_STORAGE)) {
         PrefsStorageClient(
@@ -58,13 +57,11 @@ val searchModule = module {
 
 //    Domain
 
-    single<Executor> { Executors.newCachedThreadPool() }
-
-    single<SearchInteractor> { SearchInteractorImpl(get(), get()) }
+    single<SearchInteractor> { SearchInteractorImpl(get()) }
 
     single<SearchHistoryInteractor> { SearchHistoryInteractorImpl(get()) }
 
 //    ViewModel
 
-    viewModel { SearchViewModel(get(), get(), get()) }
+    viewModel { SearchViewModel(get(), get()) }
 }
