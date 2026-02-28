@@ -17,7 +17,7 @@ import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import com.practicum.playlistmaker.utils.storage.PrefsStorageClient
 import com.practicum.playlistmaker.utils.storage.StorageClient
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -53,7 +53,9 @@ val searchModule = module {
 
     single<SearchRepository> { SearchRepositoryImpl(get()) }
 
-    single<SearchHistoryRepository> { SearchHistoryRepositoryImpl(get(named(HISTORY_STORAGE))) }
+    single<SearchHistoryRepository> {
+        SearchHistoryRepositoryImpl(get(named(HISTORY_STORAGE)))
+    }
 
 //    Domain
 

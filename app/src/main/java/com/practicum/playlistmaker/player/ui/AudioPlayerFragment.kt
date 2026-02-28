@@ -22,11 +22,13 @@ import java.util.Locale
 
 class AudioPlayerFragment : Fragment() {
 
-
     private var _binding: FragmentAudioPlayerBinding? = null
     private val binding get() = _binding!!
     private val playerViewModel by viewModel<PlayerViewModel> {
-        parametersOf(getTrackFromExtra()?.previewUrl)
+        parametersOf(
+            getTrackFromExtra()?.previewUrl,
+            getTrackFromExtra()?.trackId,
+        )
     }
 
     override fun onCreateView(
@@ -45,12 +47,19 @@ class AudioPlayerFragment : Fragment() {
 
         if (track != null) {
             fillViewsWithTrackData(track)
+            playerViewModel.initFavoriteStatus()
 
             binding.playButton.setOnClickListener {
                 playerViewModel.onPlayButtonClicked()
             }
             binding.pauseButton.setOnClickListener {
                 playerViewModel.onPlayButtonClicked()
+            }
+            binding.favoriteButton.setOnClickListener {
+                playerViewModel.onFavoriteClicked(track)
+            }
+            binding.favoriteButtonActive.setOnClickListener {
+                playerViewModel.onFavoriteClicked(track)
             }
 
             playerViewModel.observePlayerState().observe(viewLifecycleOwner) {
@@ -59,6 +68,7 @@ class AudioPlayerFragment : Fragment() {
                 } else {
                     showPauseButton()
                 }
+                showFavoriteButton(it.isFavorite)
                 binding.playerTrackPlayTime.text = it.progress
             }
         }
@@ -71,6 +81,13 @@ class AudioPlayerFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showFavoriteButton(favorite: Boolean) {
+        with(binding) {
+            favoriteButton.isVisible = !favorite
+            favoriteButtonActive.isVisible = favorite
+        }
     }
 
     private fun getTrackFromExtra(): TrackUi? {
@@ -94,22 +111,24 @@ class AudioPlayerFragment : Fragment() {
     }
 
     private fun fillViewsWithTrackData(track: TrackUi) {
-        binding.playerTrackName.text = track.trackName
-        binding.playerTrackArtistName.text = track.artistName
-        binding.durationValue.text = SimpleDateFormat("mm:ss", Locale.getDefault())
-            .format(track.trackTime.toLong())
-        binding.albumValue.text = track.collectionName
-        binding.yearValue.text = track.releaseDate.take(4)
-        binding.genreValue.text = track.primaryGenreName
-        binding.countryValue.text = track.country
+        with(binding) {
+            playerTrackName.text = track.trackName
+            playerTrackArtistName.text = track.artistName
+            durationValue.text = SimpleDateFormat("mm:ss", Locale.getDefault())
+                .format(track.trackTime.toLong())
+            albumValue.text = track.collectionName
+            yearValue.text = track.releaseDate.take(4)
+            genreValue.text = track.primaryGenreName
+            countryValue.text = track.country
 
-        if (binding.albumValue.text.isNullOrEmpty()) {
-            binding.albumGroup.isVisible = false
-        }
-        if (binding.yearValue.text.isNullOrEmpty()) {
-            binding.yearGroup.isVisible = false
-        }
+            if (albumValue.text.isNullOrEmpty()) {
+                albumGroup.isVisible = false
+            }
+            if (yearValue.text.isNullOrEmpty()) {
+                yearGroup.isVisible = false
+            }
 
+        }
         Glide.with(this)
             .load(track.artworkUrl100.replaceAfterLast(SLASH, TRACK_IMAGE_SIZE_512))
             .placeholder(R.drawable.ic_track_placeholder_312)
@@ -126,7 +145,7 @@ class AudioPlayerFragment : Fragment() {
 
         fun createArgs(track: TrackUi): Bundle {
             return bundleOf(
-                TRACK_EXTRA to track
+                TRACK_EXTRA to track,
             )
         }
     }

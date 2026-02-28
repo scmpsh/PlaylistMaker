@@ -8,7 +8,7 @@ data class TrackDto(
     val artistName: String,
     @SerializedName("trackTimeMillis") val trackTime: String,
     val artworkUrl100: String,
-    val collectionName: String,
+    val collectionName: String? = null,
     val releaseDate: String,
     val primaryGenreName: String,
     val country: String,

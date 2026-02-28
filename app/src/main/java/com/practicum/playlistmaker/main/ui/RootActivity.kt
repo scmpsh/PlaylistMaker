@@ -21,7 +21,7 @@ class RootActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityRootBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             lastInsets = insets
             applyInsets(insets)
             insets

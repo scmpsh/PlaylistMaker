@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.TrackListBinding
-import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.sharing.domain.model.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 

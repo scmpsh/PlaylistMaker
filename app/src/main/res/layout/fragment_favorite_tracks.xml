@@ -29,5 +29,14 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/favoriteTracksPlaceholder" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/favoriteTracksRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_16dp"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/track_list" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
