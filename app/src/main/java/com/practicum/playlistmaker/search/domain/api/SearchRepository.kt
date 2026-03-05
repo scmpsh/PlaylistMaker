@@ -1,6 +1,6 @@
 package com.practicum.playlistmaker.search.domain.api
 
-import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.sharing.domain.model.Track
 import com.practicum.playlistmaker.utils.Resource
 import kotlinx.coroutines.flow.Flow
 

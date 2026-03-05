@@ -1,15 +1,19 @@
 package com.practicum.playlistmaker.player.ui.view_model
 
-import java.text.SimpleDateFormat
-import java.util.Locale
+sealed class PlayerState(
+    val isPlayButtonEnabled: Boolean,
+    val progress: String,
+    val isFavorite: Boolean
+) {
+    class Default(isFavorite: Boolean = false) :
+        PlayerState(true, "00:00", isFavorite)
 
-sealed class PlayerState(val isPlayButtonEnabled: Boolean, val progress: String) {
+    class Prepared(isFavorite: Boolean = false) :
+        PlayerState(true, "00:00", isFavorite)
 
-    class Default : PlayerState(true, SimpleDateFormat("mm:ss", Locale.getDefault()).format(0))
+    class Playing(progress: String, isFavorite: Boolean = false) :
+        PlayerState(false, progress, isFavorite)
 
-    class Prepared : PlayerState(true, SimpleDateFormat("mm:ss", Locale.getDefault()).format(0))
-
-    class Playing(progress: String) : PlayerState(false, progress)
-
-    class Paused(progress: String) : PlayerState(true, progress)
+    class Paused(progress: String, isFavorite: Boolean = false) :
+        PlayerState(true, progress, isFavorite)
 }

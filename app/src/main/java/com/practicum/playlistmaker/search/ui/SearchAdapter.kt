@@ -4,8 +4,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.ui.view_model.SearchUiItem
+import com.practicum.playlistmaker.sharing.domain.model.Track
 
 class SearchAdapter(
     private val onTrackClick: (Track) -> Unit,

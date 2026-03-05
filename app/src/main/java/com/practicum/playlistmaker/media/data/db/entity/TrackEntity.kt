@@ -1,10 +1,12 @@
-package com.practicum.playlistmaker.player.ui.model
+package com.practicum.playlistmaker.media.data.db.entity
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import java.time.OffsetDateTime
 
-@Parcelize
-data class TrackUi(
+@Entity(tableName = "favorite_tracks")
+data class TrackEntity(
+    @PrimaryKey
     val trackId: Int,
     val trackName: String,
     val artistName: String,
@@ -15,4 +17,5 @@ data class TrackUi(
     val primaryGenreName: String,
     val country: String,
     val previewUrl: String,
-) : Parcelable
+    val createDate: OffsetDateTime,
+)

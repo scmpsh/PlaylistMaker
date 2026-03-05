@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryInteractor
 import com.practicum.playlistmaker.search.domain.api.SearchInteractor
-import com.practicum.playlistmaker.search.domain.models.Track
+import com.practicum.playlistmaker.sharing.domain.model.Track
 import com.practicum.playlistmaker.utils.debounce
 import kotlinx.coroutines.launch
 
@@ -25,7 +25,7 @@ class SearchViewModel(
         }
 
     private fun searchRequest(inputText: String) {
-        if (latestSearchText.isNullOrBlank()) {
+        if (inputText != latestSearchText) {
             return
         }
 
@@ -33,6 +33,9 @@ class SearchViewModel(
 
         viewModelScope.launch {
             searchInteractor.searchTracks(inputText).collect { pair ->
+                if (inputText != latestSearchText) {
+                    return@collect
+                }
                 val (foundTracks, errorMessage) = pair
 
                 val tracks = mutableListOf<Track>()
@@ -62,14 +65,14 @@ class SearchViewModel(
     }
 
     fun onSearchTextChanged(inputText: String, force: Boolean = false) {
+        latestSearchText = inputText
+
         if (inputText.isBlank()) {
-            latestSearchText = ""
             showHistory()
             return
         }
 
-        if (force || inputText != latestSearchText) {
-            latestSearchText = inputText
+        if (force || inputText.isNotBlank()) {
             trackSearchDebounce(inputText)
         }
     }
@@ -79,20 +82,23 @@ class SearchViewModel(
     }
 
     private fun showHistory() {
-        val history = searchHistoryInteractor.getHistory()
-            ?.map { SearchUiItem.TrackItem(it) }
-            ?.plus(SearchUiItem.ClearHistoryItem)
-            .orEmpty()
-
-        if (history.isNotEmpty()) {
-            stateLiveData.postValue(SearchState.Content(history))
+        viewModelScope.launch {
+            val history = searchHistoryInteractor.getHistory()
+                ?.map { SearchUiItem.TrackItem(it) }
+                ?.plus(SearchUiItem.ClearHistoryItem)
+                .orEmpty()
+            if (history.isNotEmpty()) {
+                stateLiveData.postValue(SearchState.Content(history))
+            }
         }
     }
 
     fun onTrackClicked(track: Track) {
-        searchHistoryInteractor.saveToHistory(track)
-        if (latestSearchText.isNullOrBlank()) {
-            showHistory()
+        viewModelScope.launch {
+            searchHistoryInteractor.saveToHistory(track)
+            if (latestSearchText.isNullOrBlank()) {
+                showHistory()
+            }
         }
     }
 
