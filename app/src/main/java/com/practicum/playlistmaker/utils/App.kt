@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.utils
 
 import android.app.Application
+import com.markodevcic.peko.PermissionRequester
 import com.practicum.playlistmaker.di.commonModule
 import com.practicum.playlistmaker.di.mediaModule
 import com.practicum.playlistmaker.di.playerModule
@@ -30,6 +31,7 @@ class App : Application() {
         }
 
         onCreateTheme()
+        PermissionRequester.initialize(applicationContext)
     }
 
     private fun onCreateTheme() {

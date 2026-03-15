@@ -17,6 +17,7 @@ val playerModule = module {
             trackId = trackId,
             mediaPlayer = get(),
             favoriteTrackInteractor = get(),
+            playlistInteractor = get(),
         )
     }
 }

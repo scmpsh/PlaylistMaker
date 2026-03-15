@@ -3,4 +3,6 @@
     <attr name="baseTextColor" format="color" />
     <attr name="baseBackgroundColor" format="color" />
     <attr name="menuNotActiveItemColor" format="color" />
+    <attr name="inputLayoutStrokeColor" format="color"/>
+    <attr name="handleColor" format="color"/>
 </resources>
