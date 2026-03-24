@@ -34,7 +34,7 @@ class RootActivity : AppCompatActivity() {
         binding.bottomNavigationView.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            binding.bottomNavViewGroup.isVisible = destination.id != R.id.audioPlayerFragment
+            binding.bottomNavViewGroup.isVisible = !IDS_WITHOUT_BOTTOM_NAV.contains(destination.id)
             lastInsets?.let { applyInsets(it) }
         }
     }
@@ -51,5 +51,10 @@ class RootActivity : AppCompatActivity() {
             binding.bottomNavViewGroup.setPadding(0, 0, 0, 0)
             binding.rootFragmentContainerView.setPadding(0, 0, 0, systemBars.bottom)
         }
+    }
+
+    companion object {
+        private val IDS_WITHOUT_BOTTOM_NAV =
+            setOf(R.id.audioPlayerFragment, R.id.createPlaylistFragment)
     }
 }

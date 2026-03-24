@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.media.domain.api.FavoriteTrackInteractor
+import com.practicum.playlistmaker.media.domain.api.PlaylistInteractor
+import com.practicum.playlistmaker.media.domain.dto.Playlist
 import com.practicum.playlistmaker.player.ui.mapper.toDomain
 import com.practicum.playlistmaker.player.ui.model.TrackUi
 import kotlinx.coroutines.Job
@@ -19,11 +21,15 @@ class PlayerViewModel(
     private val trackId: Int,
     private val mediaPlayer: MediaPlayer,
     private val favoriteTrackInteractor: FavoriteTrackInteractor,
+    private val playlistInteractor: PlaylistInteractor,
 ) : ViewModel() {
 
     private var timerJob: Job? = null
 
     private var isFavorite = false
+
+    private var playlists = emptyList<Playlist>()
+
 
     private val playerStateLiveData =
         MutableLiveData<PlayerState>(PlayerState.Default(isFavorite))
@@ -40,6 +46,17 @@ class PlayerViewModel(
                 isFavorite = it.contains(trackId)
                 updateFavoriteInCurrentState()
             }
+        }
+    }
+
+    fun addTrackToPlaylist(playlist: Playlist, trackUi: TrackUi): Boolean {
+        if (playlist.tracks.contains(trackUi.trackId)) {
+            return false
+        } else {
+            viewModelScope.launch {
+                playlistInteractor.addTrackToPlaylist(playlist, trackUi.toDomain())
+            }
+            return true
         }
     }
 
@@ -80,10 +97,20 @@ class PlayerViewModel(
 
     private fun updateFavoriteInCurrentState() {
         val newState = when (val currentState = playerStateLiveData.value) {
-            is PlayerState.Playing -> PlayerState.Playing(currentState.progress, isFavorite)
-            is PlayerState.Paused -> PlayerState.Paused(currentState.progress, isFavorite)
-            is PlayerState.Prepared -> PlayerState.Prepared(isFavorite)
-            else -> PlayerState.Default(isFavorite)
+            is PlayerState.Playing -> PlayerState.Playing(
+                currentState.progress,
+                isFavorite,
+                playlists
+            )
+
+            is PlayerState.Paused -> PlayerState.Paused(
+                currentState.progress,
+                isFavorite,
+                playlists
+            )
+
+            is PlayerState.Prepared -> PlayerState.Prepared(isFavorite, playlists)
+            else -> PlayerState.Default(isFavorite, playlists)
         }
         renderState(newState)
     }
@@ -150,6 +177,15 @@ class PlayerViewModel(
             Locale.getDefault()
         ).format(mediaPlayer.currentPosition)
             ?: DEFAULT_TIME
+    }
+
+    fun getAllPlaylists() {
+        viewModelScope.launch {
+            playlistInteractor.findAllPlaylists().collect {
+                playlists = it
+                updateFavoriteInCurrentState()
+            }
+        }
     }
 
     companion object {

@@ -15,14 +15,11 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
-    <style name="MainButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+    <style name="CreatePlaylistButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:fontFamily">@font/ys_display_medium</item>
-        <item name="android:backgroundTint">@color/white</item>
+        <item name="backgroundTint">@color/new_playlist_button_selector</item>
         <item name="android:textAllCaps">false</item>
-        <item name="android:textSize">@dimen/title_22sp</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="cornerRadius">@dimen/dimen_16dp</item>
-        <item name="iconTint">@color/black</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="SettingsButton">
@@ -121,5 +118,14 @@
     <style name="BottomNavTextStyle" parent="TextAppearance.AppCompat.Caption">
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="InputText">
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">?attr/baseTextColor</item>
+    </style>
+
+    <style name="InputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColorHint">?attr/baseTextColor</item>
     </style>
 </resources>

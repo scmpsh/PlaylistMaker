@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     id("kotlin-parcelize")
     alias(libs.plugins.google.ksp)
+    alias(libs.plugins.room)
 }
 
 android {
@@ -35,9 +36,14 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
 }
 
 dependencies {
+    implementation(libs.peko)
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)

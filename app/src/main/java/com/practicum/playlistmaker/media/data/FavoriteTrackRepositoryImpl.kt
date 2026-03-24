@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class FavoriteTrackRepositoryImpl(
-    val trackDao: TrackDao,
-    val trackDbConvertor: TrackDbConvertor,
+    private val trackDao: TrackDao,
+    private val trackDbConvertor: TrackDbConvertor,
 ) : FavoriteTrackRepository {
 
     override suspend fun addFavoriteTrack(track: Track) {

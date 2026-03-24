@@ -5,7 +5,20 @@
     style="@style/DefaultLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".media.ui.FavoriteTracksFragment">
+    tools:context=".media.ui.PlaylistFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/create_playlist_button"
+        app:spanCount="2"
+        tools:listitem="@layout/item_playlist" />
 
     <Button
         android:id="@+id/create_playlist_button"
