@@ -57,6 +57,8 @@
     <string name="input_description_playlist_label">Описание</string>
     <string name="create_playlist_label">Новый плейлист</string>
     <string name="create_button_label">Создать</string>
+    <string name="save_button_label">Сохранить</string>
+    <string name="edit_playlist">Редактировать</string>
     <string name="finish_playlist_creation_dialog_title">Завершить создание плейлиста?</string>
     <string name="finish_playlist_creation_dialog_message">Все несохраненные данные будут потеряны</string>
     <string name="cancel_button_label">Отмена</string>
@@ -71,4 +73,25 @@
         <item quantity="many">%d треков</item>
         <item quantity="other">%d треков</item>
     </plurals>
+    <plurals name="minutes_count">
+        <item quantity="one">%d минута</item>
+        <item quantity="few">%d минуты</item>
+        <item quantity="many">%d минут</item>
+        <item quantity="other">%d минут</item>
+    </plurals>
+    <string name="playlist_info_format">%1$s • %2$s</string>
+    <string name="name_of_playlist">Name of playlist</string>
+    <string name="_2022">2022</string>
+
+    <string name="confirm_delete_track">Хотите удалить трек?</string>
+    <string name="yes">ДА</string>
+    <string name="no">НЕТ</string>
+
+    <string name="no_tracks_to_share">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="share_playlist">Поделиться</string>
+    <string name="edit_info">Редактировать информацию</string>
+    <string name="delete_playlist">Удалить плейлист</string>
+    <string name="confirm_delete_playlist_message">Хотите удалить плейлист «%s»?</string>
+    <string name="playlist_share_track_format">%1$d. %2$s - %3$s (%4$s)</string>
+    <string name="_300_98">300 минут • 98 треков</string>
 </resources>

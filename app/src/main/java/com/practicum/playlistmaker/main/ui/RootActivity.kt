@@ -41,6 +41,7 @@ class RootActivity : AppCompatActivity() {
 
     private fun applyInsets(insets: WindowInsetsCompat) {
         val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
 
         binding.root.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
 
@@ -49,12 +50,13 @@ class RootActivity : AppCompatActivity() {
             binding.rootFragmentContainerView.setPadding(0, 0, 0, 0)
         } else {
             binding.bottomNavViewGroup.setPadding(0, 0, 0, 0)
-            binding.rootFragmentContainerView.setPadding(0, 0, 0, systemBars.bottom)
+            val bottomPadding = if (ime.bottom > systemBars.bottom) ime.bottom else systemBars.bottom
+            binding.rootFragmentContainerView.setPadding(0, 0, 0, bottomPadding)
         }
     }
 
     companion object {
         private val IDS_WITHOUT_BOTTOM_NAV =
-            setOf(R.id.audioPlayerFragment, R.id.createPlaylistFragment)
+            setOf(R.id.audioPlayerFragment, R.id.createPlaylistFragment, R.id.playlistDetailsFragment, R.id.editPlaylistFragment)
     }
 }

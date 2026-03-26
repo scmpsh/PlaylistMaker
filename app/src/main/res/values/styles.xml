@@ -128,4 +128,16 @@
     <style name="InputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:textColorHint">?attr/baseTextColor</item>
     </style>
+
+    <style name="AlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/black</item>
+        <item name="colorPrimary">@color/blue</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/AlertDialogTitleText</item>
+    </style>
+
+    <style name="AlertDialogTitleText" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>

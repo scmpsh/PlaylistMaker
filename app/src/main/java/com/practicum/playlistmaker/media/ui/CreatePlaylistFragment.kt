@@ -22,14 +22,14 @@ import com.practicum.playlistmaker.databinding.FragmentCreatePlaylistBinding
 import com.practicum.playlistmaker.media.ui.view_model.PlaylistViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class CreatePlaylistFragment : Fragment() {
+open class CreatePlaylistFragment : Fragment() {
 
-    private val viewModel: PlaylistViewModel by viewModel()
+    protected open val viewModel: PlaylistViewModel by viewModel()
 
     private var _binding: FragmentCreatePlaylistBinding? = null
-    private val binding get() = _binding!!
+    protected val binding get() = _binding!!
 
-    private var imagePath: Uri? = null
+    protected var imagePath: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,13 +46,7 @@ class CreatePlaylistFragment : Fragment() {
         val pickMedia =
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 if (uri != null) {
-                    Glide.with(this)
-                        .load(uri)
-                        .transform(
-                            CenterCrop(),
-                            RoundedCorners(resources.getDimensionPixelSize(R.dimen.dimen_8dp))
-                        )
-                        .into(binding.coverImage)
+                    setImage(uri)
                     imagePath = uri
                 } else {
                     Log.d("PhotoPicker", "No media selected")
@@ -68,17 +62,7 @@ class CreatePlaylistFragment : Fragment() {
         }
 
         binding.createPlaylistButton.setOnClickListener {
-            viewModel.addPlaylist(
-                binding.nameInput.text?.toString().orEmpty(),
-                binding.descriptionInput.text?.toString().orEmpty(),
-                imagePath
-            )
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.playlist_created_message, binding.nameInput.text?.toString()),
-                Toast.LENGTH_SHORT
-            ).show()
-            findNavController().popBackStack()
+            onSaveClick()
         }
 
         binding.backButton.setOnClickListener {
@@ -94,7 +78,31 @@ class CreatePlaylistFragment : Fragment() {
             })
     }
 
-    private fun handleBackNavigation() {
+    protected fun setImage(uri: Uri?) {
+        Glide.with(this)
+            .load(uri)
+            .transform(
+                CenterCrop(),
+                RoundedCorners(resources.getDimensionPixelSize(R.dimen.dimen_8dp))
+            )
+            .into(binding.coverImage)
+    }
+
+    protected open fun onSaveClick() {
+        viewModel.addPlaylist(
+            binding.nameInput.text?.toString().orEmpty(),
+            binding.descriptionInput.text?.toString().orEmpty(),
+            imagePath
+        )
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.playlist_created_message, binding.nameInput.text?.toString()),
+            Toast.LENGTH_SHORT
+        ).show()
+        findNavController().popBackStack()
+    }
+
+    protected open fun handleBackNavigation() {
         if (imagePath != null || !binding.nameInput.text.isNullOrBlank() || !binding.descriptionInput.text.isNullOrBlank()) {
             showConfirmExitDialog()
         } else {

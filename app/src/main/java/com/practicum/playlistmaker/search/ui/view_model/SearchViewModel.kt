@@ -87,9 +87,7 @@ class SearchViewModel(
                 ?.map { SearchUiItem.TrackItem(it) }
                 ?.plus(SearchUiItem.ClearHistoryItem)
                 .orEmpty()
-            if (history.isNotEmpty()) {
-                stateLiveData.postValue(SearchState.Content(history))
-            }
+            stateLiveData.postValue(SearchState.Content(history))
         }
     }
 

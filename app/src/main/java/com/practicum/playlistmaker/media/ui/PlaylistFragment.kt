@@ -33,6 +33,14 @@ class PlaylistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        adapter = PlaylistAdapter { playlist ->
+            findNavController().navigate(
+                R.id.action_mediaFragment_to_playlistDetailsFragment,
+                PlaylistDetailsFragment.createArgs(playlist.id)
+            )
+        }
+        binding.recyclerView.adapter = adapter
+
         binding.createPlaylistButton.setOnClickListener {
             findNavController().navigate(R.id.action_mediaFragment_to_createPlaylistFragment)
         }
@@ -46,6 +54,7 @@ class PlaylistFragment : Fragment() {
         when (state) {
             is PlaylistState.Empty -> showEmpty()
             is PlaylistState.Content -> showContent(state.playlists)
+            else -> {}
         }
     }
 
@@ -60,8 +69,7 @@ class PlaylistFragment : Fragment() {
         binding.playlistPlaceholder.isVisible = false
         binding.playlistPlaceholderText.isVisible = false
 
-        adapter = PlaylistAdapter(playlists)
-        binding.recyclerView.adapter = adapter
+        adapter?.updatePlaylists(playlists)
     }
 
     override fun onDestroyView() {

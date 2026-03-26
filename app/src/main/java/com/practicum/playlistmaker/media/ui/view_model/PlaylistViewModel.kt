@@ -2,27 +2,39 @@ package com.practicum.playlistmaker.media.ui.view_model
 
 import android.net.Uri
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.media.domain.api.CoverStorageInteractor
 import com.practicum.playlistmaker.media.domain.api.PlaylistInteractor
 import com.practicum.playlistmaker.media.domain.dto.Playlist
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class PlaylistViewModel(
-    private val playlistInteractor: PlaylistInteractor,
-    private val coverStorageInteractor: CoverStorageInteractor
+open class PlaylistViewModel(
+    protected val playlistInteractor: PlaylistInteractor,
+    protected val coverStorageInteractor: CoverStorageInteractor
 ) : ViewModel() {
-    val state: LiveData<PlaylistState> = playlistInteractor.findAllPlaylists()
-        .map { playlists ->
-            if (playlists.isEmpty()) PlaylistState.Empty
-            else PlaylistState.Content(playlists)
-        }
-        .asLiveData(viewModelScope.coroutineContext)
 
-    fun addPlaylist(
+    protected val _state = MutableLiveData<PlaylistState>()
+    open val state: LiveData<PlaylistState> = _state
+
+    init {
+        fillData()
+    }
+
+    protected open fun fillData() {
+        viewModelScope.launch {
+            playlistInteractor.findAllPlaylists().collect { playlists ->
+                if (playlists.isEmpty()) {
+                    _state.postValue(PlaylistState.Empty)
+                } else {
+                    _state.postValue(PlaylistState.Content(playlists))
+                }
+            }
+        }
+    }
+
+    open fun addPlaylist(
         playlistName: String,
         playlistDescription: String,
         uri: Uri?
