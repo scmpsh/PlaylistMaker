@@ -14,7 +14,7 @@ class TrackDbConvertor {
             trackTime = track.trackTime,
             artworkUrl100 = track.artworkUrl100,
             collectionName = track.collectionName,
-            releaseDate = track.releaseDate,
+            releaseDate = track.releaseDate ?: "",
             primaryGenreName = track.primaryGenreName,
             country = track.country,
             previewUrl = track.previewUrl,

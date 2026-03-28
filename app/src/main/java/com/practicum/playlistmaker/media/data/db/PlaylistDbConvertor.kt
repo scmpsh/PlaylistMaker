@@ -38,11 +38,26 @@ class PlaylistDbConvertor {
             trackTime = track.trackTime,
             artworkUrl100 = track.artworkUrl100,
             collectionName = track.collectionName,
-            releaseDate = track.releaseDate,
+            releaseDate = track.releaseDate ?: "",
             primaryGenreName = track.primaryGenreName,
             country = track.country,
             previewUrl = track.previewUrl,
             createDate = OffsetDateTime.now()
+        )
+    }
+
+    fun map(tracksInPlaylistsEntity: TracksInPlaylistsEntity): Track {
+        return Track(
+            trackId = tracksInPlaylistsEntity.trackId,
+            trackName = tracksInPlaylistsEntity.trackName,
+            artistName = tracksInPlaylistsEntity.artistName,
+            trackTime = tracksInPlaylistsEntity.trackTime,
+            artworkUrl100 = tracksInPlaylistsEntity.artworkUrl100,
+            collectionName = tracksInPlaylistsEntity.collectionName,
+            releaseDate = tracksInPlaylistsEntity.releaseDate,
+            primaryGenreName = tracksInPlaylistsEntity.primaryGenreName,
+            country = tracksInPlaylistsEntity.country,
+            previewUrl = tracksInPlaylistsEntity.previewUrl
         )
     }
 }

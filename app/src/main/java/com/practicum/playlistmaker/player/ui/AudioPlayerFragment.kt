@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -37,26 +36,7 @@ class AudioPlayerFragment : Fragment() {
     }
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
-    private val playlistAdapter = PlaylistAdapterBottomSheet { playlist ->
-        val track = getTrackFromExtra()
-        if (track != null) {
-            val isSaved = playerViewModel.addTrackToPlaylist(playlist, track)
-            if (isSaved) {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.added_to_playlist, playlist.name),
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.already_added_to_playlist, playlist.name),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
+    private var playlistAdapter: PlaylistBottomSheetAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -89,6 +69,27 @@ class AudioPlayerFragment : Fragment() {
                 playerViewModel.onFavoriteClicked(track)
             }
 
+            playlistAdapter = PlaylistBottomSheetAdapter { playlist ->
+                val currentTrack = getTrackFromExtra()
+                if (currentTrack != null) {
+                    val isSaved = playerViewModel.addTrackToPlaylist(playlist, currentTrack)
+                    if (isSaved) {
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.added_to_playlist, playlist.name),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.already_added_to_playlist, playlist.name),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+
             playerViewModel.observePlayerState().observe(viewLifecycleOwner) {
                 if (it.isPlayButtonEnabled) {
                     showPlayButton()
@@ -96,10 +97,7 @@ class AudioPlayerFragment : Fragment() {
                     showPauseButton()
                 }
                 showFavoriteButton(it.isFavorite)
-                binding.playerTrackPlayTime.text = it.progress
-                playlistAdapter.playlists.clear()
-                playlistAdapter.playlists.addAll(it.playlists)
-                playlistAdapter.notifyDataSetChanged()
+                playlistAdapter?.updatePlaylists(it.playlists)
             }
         }
 
@@ -186,7 +184,7 @@ class AudioPlayerFragment : Fragment() {
             durationValue.text = SimpleDateFormat("mm:ss", Locale.getDefault())
                 .format(track.trackTime.toLong())
             albumValue.text = track.collectionName
-            yearValue.text = track.releaseDate.take(4)
+            yearValue.text = track.releaseDate?.take(4)
             genreValue.text = track.primaryGenreName
             countryValue.text = track.country
 
@@ -215,9 +213,9 @@ class AudioPlayerFragment : Fragment() {
         private const val TRACK_EXTRA = "TRACK_EXTRA"
 
         fun createArgs(track: TrackUi): Bundle {
-            return bundleOf(
-                TRACK_EXTRA to track,
-            )
+            val bundle = Bundle()
+            bundle.putParcelable(TRACK_EXTRA, track)
+            return bundle
         }
     }
 }

@@ -16,7 +16,9 @@ import com.practicum.playlistmaker.media.domain.api.PlaylistRepository
 import com.practicum.playlistmaker.media.domain.impl.CoverStorageInteractorImpl
 import com.practicum.playlistmaker.media.domain.impl.FavoriteTrackInteractorImpl
 import com.practicum.playlistmaker.media.domain.impl.PlaylistInteractorImpl
+import com.practicum.playlistmaker.media.ui.view_model.EditPlaylistViewModel
 import com.practicum.playlistmaker.media.ui.view_model.FavoriteTracksViewModel
+import com.practicum.playlistmaker.media.ui.view_model.PlaylistDetailsViewModel
 import com.practicum.playlistmaker.media.ui.view_model.PlaylistViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
@@ -24,7 +26,9 @@ import org.koin.dsl.module
 
 val mediaModule = module {
     viewModel { PlaylistViewModel(get(), get()) }
+    viewModel { (playlistId: Int) -> EditPlaylistViewModel(playlistId, get(), get()) }
     viewModel { FavoriteTracksViewModel(get()) }
+    viewModel { (playlistId: Int) -> PlaylistDetailsViewModel(playlistId, get(), get()) }
 
     single {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")

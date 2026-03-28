@@ -15,4 +15,12 @@ interface PlaylistInteractor {
     fun findAllPlaylists(): Flow<List<Playlist>>
 
     suspend fun addTrackToPlaylist(playlist: Playlist, track: Track)
+
+    suspend fun getPlaylistById(id: Int): Playlist
+
+    fun getTracksInPlaylist(trackIds: List<Int>): Flow<List<Track>>
+
+    suspend fun removeTrackFromPlaylist(playlist: Playlist, trackId: Int)
+
+    suspend fun deletePlaylist(playlist: Playlist)
 }

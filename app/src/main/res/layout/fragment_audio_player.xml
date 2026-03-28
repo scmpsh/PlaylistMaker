@@ -342,13 +342,13 @@
 
         <Button
             android:id="@+id/newPlaylistButton"
-            style="@style/CreatePlaylistButton"
+            style="@style/SearchButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="28dp"
-            android:backgroundTint="?attr/menuNotActiveItemColor"
             android:text="@string/create_playlist"
+            android:textAllCaps="false"
             app:cornerRadius="54dp" />
 
         <androidx.recyclerview.widget.RecyclerView

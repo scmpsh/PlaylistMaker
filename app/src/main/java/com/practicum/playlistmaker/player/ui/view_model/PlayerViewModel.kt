@@ -55,6 +55,7 @@ class PlayerViewModel(
         } else {
             viewModelScope.launch {
                 playlistInteractor.addTrackToPlaylist(playlist, trackUi.toDomain())
+                updateFavoriteInCurrentState()
             }
             return true
         }

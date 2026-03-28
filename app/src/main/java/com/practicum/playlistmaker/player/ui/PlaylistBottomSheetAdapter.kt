@@ -1,21 +1,25 @@
-package com.practicum.playlistmaker.media.ui
+package com.practicum.playlistmaker.player.ui
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.media.domain.dto.Playlist
+import com.practicum.playlistmaker.media.ui.PlaylistBottomSheetViewHolder
 
-class PlaylistAdapter(
+class PlaylistBottomSheetAdapter(
     private val onPlaylistClick: (Playlist) -> Unit,
-) : RecyclerView.Adapter<PlaylistViewHolder>() {
+) : RecyclerView.Adapter<PlaylistBottomSheetViewHolder>() {
 
     private val items = mutableListOf<Playlist>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
-        return PlaylistViewHolder.from(parent)
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): PlaylistBottomSheetViewHolder {
+        return PlaylistBottomSheetViewHolder.Companion.from(parent)
     }
 
-    override fun onBindViewHolder(holder: PlaylistViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PlaylistBottomSheetViewHolder, position: Int) {
         val playlist = items[position]
         holder.bind(playlist)
         holder.itemView.setOnClickListener { onPlaylistClick(playlist) }
@@ -24,7 +28,7 @@ class PlaylistAdapter(
     override fun getItemCount(): Int = items.size
 
     fun updatePlaylists(newItems: List<Playlist>) {
-        val diffCallback = PlaylistCallback(items, newItems)
+        val diffCallback = PlaylistBottomSheetCallback(items, newItems)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         items.clear()
         items.addAll(newItems)
