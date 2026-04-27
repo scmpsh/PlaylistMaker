@@ -92,35 +92,25 @@
                 app:layout_constraintStart_toEndOf="@id/leftBorder"
                 app:layout_constraintTop_toBottomOf="@id/playerTrackArtistName" />
 
-            <ImageView
-                android:id="@+id/playButton"
+            <com.practicum.playlistmaker.player.ui.PlaybackButtonView
+                android:id="@+id/playbackButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_play_button_100"
                 app:layout_constraintBottom_toBottomOf="@id/queueButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/queueButton" />
-
-            <ImageView
-                android:id="@+id/pauseButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_pause_button_100"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/queueButton"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/queueButton" />
+                app:layout_constraintTop_toTopOf="@id/queueButton"
+                app:pauseImageRes="@drawable/ic_pause_button_100"
+                app:playImageRes="@drawable/ic_play_button_100" />
 
             <ImageView
                 android:id="@+id/favoriteButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_like_button"
-                app:layout_constraintBottom_toBottomOf="@id/playButton"
+                app:layout_constraintBottom_toBottomOf="@id/playbackButton"
                 app:layout_constraintEnd_toStartOf="@id/rightBorder"
-                app:layout_constraintTop_toTopOf="@id/playButton" />
+                app:layout_constraintTop_toTopOf="@id/playbackButton" />
 
             <ImageView
                 android:id="@+id/favoriteButtonActive"
@@ -128,9 +118,9 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_like_button_active"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/playButton"
+                app:layout_constraintBottom_toBottomOf="@id/playbackButton"
                 app:layout_constraintEnd_toStartOf="@id/rightBorder"
-                app:layout_constraintTop_toTopOf="@id/playButton" />
+                app:layout_constraintTop_toTopOf="@id/playbackButton" />
 
             <TextView
                 android:id="@+id/playerTrackPlayTime"

@@ -150,7 +150,7 @@ class PlayerViewModel(
             while (mediaPlayer.isPlaying) {
                 delay(PLAY_TIME_RENDER_DELAY_MILLIS)
                 renderState(
-                    PlayerState.Playing(getCurrentPlayerPosition(), isFavorite)
+                    PlayerState.Playing(getCurrentPlayerPosition(), isFavorite, playlists)
                 )
             }
         }

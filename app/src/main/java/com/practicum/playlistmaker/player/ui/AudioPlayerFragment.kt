@@ -56,10 +56,7 @@ class AudioPlayerFragment : Fragment() {
             fillViewsWithTrackData(track)
             playerViewModel.initFavoriteStatus()
 
-            binding.playButton.setOnClickListener {
-                playerViewModel.onPlayButtonClicked()
-            }
-            binding.pauseButton.setOnClickListener {
+            binding.playbackButton.setOnClickListener {
                 playerViewModel.onPlayButtonClicked()
             }
             binding.favoriteButton.setOnClickListener {
@@ -91,12 +88,9 @@ class AudioPlayerFragment : Fragment() {
             }
 
             playerViewModel.observePlayerState().observe(viewLifecycleOwner) {
-                if (it.isPlayButtonEnabled) {
-                    showPlayButton()
-                } else {
-                    showPauseButton()
-                }
+                binding.playbackButton.setState(!it.isPlayButtonEnabled)
                 showFavoriteButton(it.isFavorite)
+                binding.playerTrackPlayTime.text = it.progress
                 playlistAdapter?.updatePlaylists(it.playlists)
             }
         }
@@ -165,16 +159,6 @@ class AudioPlayerFragment : Fragment() {
             requireArguments().getParcelable(TRACK_EXTRA)
         }
         return track
-    }
-
-    private fun showPauseButton() {
-        binding.pauseButton.isVisible = true
-        binding.playButton.isVisible = false
-    }
-
-    private fun showPlayButton() {
-        binding.pauseButton.isVisible = false
-        binding.playButton.isVisible = true
     }
 
     private fun fillViewsWithTrackData(track: TrackUi) {
