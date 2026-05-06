@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.search.ui
 
 import android.content.Context.INPUT_METHOD_SERVICE
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,7 @@ import com.practicum.playlistmaker.search.ui.view_model.SearchState
 import com.practicum.playlistmaker.search.ui.view_model.SearchUiItem
 import com.practicum.playlistmaker.search.ui.view_model.SearchViewModel
 import com.practicum.playlistmaker.sharing.domain.model.Track
+import com.practicum.playlistmaker.utils.ConnectivityReceiver
 import com.practicum.playlistmaker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -28,6 +30,8 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var adapter: SearchAdapter
     private val searchViewModel by viewModel<SearchViewModel>()
+
+    private val connectivityReceiver = ConnectivityReceiver()
 
     private lateinit var onTrackClickDebounce: (Track) -> Unit
 
@@ -68,6 +72,19 @@ class SearchFragment : Fragment() {
                 true
             )
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requireContext().registerReceiver(
+            connectivityReceiver,
+            IntentFilter("android.net.conn.CONNECTIVITY_CHANGE")
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireContext().unregisterReceiver(connectivityReceiver)
     }
 
     override fun onDestroyView() {

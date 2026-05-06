@@ -1,7 +1,14 @@
 package com.practicum.playlistmaker.player.ui
 
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,16 +16,21 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.PEEK_HEIGHT_AUTO
+import com.markodevcic.peko.PermissionRequester
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentAudioPlayerBinding
+import com.practicum.playlistmaker.player.service.MusicService
 import com.practicum.playlistmaker.player.ui.model.TrackUi
 import com.practicum.playlistmaker.player.ui.view_model.PlayerViewModel
+import com.practicum.playlistmaker.utils.ConnectivityReceiver
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
@@ -30,13 +42,26 @@ class AudioPlayerFragment : Fragment() {
     private val binding get() = _binding!!
     private val playerViewModel by viewModel<PlayerViewModel> {
         parametersOf(
-            getTrackFromExtra()?.previewUrl,
             getTrackFromExtra()?.trackId,
         )
     }
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private var playlistAdapter: PlaylistBottomSheetAdapter? = null
+    private val connectivityReceiver = ConnectivityReceiver()
+
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as MusicService.MusicBinder
+            val track = getTrackFromExtra()
+            if (track != null) {
+                playerViewModel.setService(binder.getService(), track)
+            }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,6 +78,15 @@ class AudioPlayerFragment : Fragment() {
         val track = getTrackFromExtra()
 
         if (track != null) {
+            val intent = Intent(requireContext(), MusicService::class.java).apply {
+                putExtra(MusicService.EXTRA_URL, track.previewUrl)
+                putExtra(MusicService.EXTRA_TRACK_NAME, track.trackName)
+                putExtra(MusicService.EXTRA_ARTIST_NAME, track.artistName)
+            }
+            requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+
+            requestNotificationPermission()
+
             fillViewsWithTrackData(track)
             playerViewModel.initFavoriteStatus()
 
@@ -139,8 +173,34 @@ class AudioPlayerFragment : Fragment() {
         binding.playlistsRecyclerView.adapter = playlistAdapter
     }
 
+    override fun onResume() {
+        super.onResume()
+        playerViewModel.onResume()
+        requireContext().registerReceiver(
+            connectivityReceiver,
+            IntentFilter("android.net.conn.CONNECTIVITY_CHANGE")
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireContext().unregisterReceiver(connectivityReceiver)
+        playerViewModel.onPause()
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val requester = PermissionRequester.instance()
+            viewLifecycleOwner.lifecycleScope.launch {
+                requester.request(Manifest.permission.POST_NOTIFICATIONS).collect { _ ->
+                }
+            }
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        requireContext().unbindService(serviceConnection)
         _binding = null
     }
 
