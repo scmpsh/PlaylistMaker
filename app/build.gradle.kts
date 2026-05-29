@@ -3,6 +3,7 @@ plugins {
     id("kotlin-parcelize")
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -35,6 +36,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        compose = true
     }
 
     room {
@@ -55,6 +57,13 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.runtime.livedata)
+    implementation(libs.coil.compose)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.glide)
     implementation(libs.retrofit)
