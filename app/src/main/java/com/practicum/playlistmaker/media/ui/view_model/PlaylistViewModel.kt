@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.media.domain.api.CoverStorageInteractor
 import com.practicum.playlistmaker.media.domain.api.PlaylistInteractor
 import com.practicum.playlistmaker.media.domain.dto.Playlist
+import com.practicum.playlistmaker.media.ui.model.PlaylistUi
 import kotlinx.coroutines.launch
 
 open class PlaylistViewModel(
@@ -28,7 +29,15 @@ open class PlaylistViewModel(
                 if (playlists.isEmpty()) {
                     _state.postValue(PlaylistState.Empty)
                 } else {
-                    _state.postValue(PlaylistState.Content(playlists))
+                    val playlistUiList = playlists.map { playlist ->
+                        PlaylistUi(
+                            id = playlist.id,
+                            name = playlist.name,
+                            coverUri = if (playlist.coverImagePath.isNotEmpty()) "file://${playlist.coverImagePath}" else null,
+                            tracksCount = playlist.tracks.size
+                        )
+                    }
+                    _state.postValue(PlaylistState.Content(playlistUiList))
                 }
             }
         }

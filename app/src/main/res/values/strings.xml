@@ -95,4 +95,10 @@
     <string name="playlist_share_track_format">%1$d. %2$s - %3$s (%4$s)</string>
     <string name="no_internet_connection">Отсутствует подключение к интернету</string>
     <string name="_300_98">300 минут • 98 треков</string>
+    <string name="settings_title">Настройки</string>
+    <string name="dark_theme">Темная тема</string>
+    <string name="nothing_found_text">Ничего не найдено</string>
+    <string name="error_text">Ошибка</string>
+    <string name="clear_history_text">Очистить историю</string>
+    <string name="tab_content_format">Контент вкладки %d</string>
 </resources>
